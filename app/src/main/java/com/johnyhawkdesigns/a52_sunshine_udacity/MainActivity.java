@@ -19,6 +19,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+        //Add fragment
+        if (savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new PlaceHolderFragment())
+                    .commit();
+        }
+
+
+
     }
 
     @Override
