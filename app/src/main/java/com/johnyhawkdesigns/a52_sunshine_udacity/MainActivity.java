@@ -1,11 +1,8 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,14 +19,12 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        //Add fragment
+        //Add fragment to our MainActivity
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceHolderFragment())
+                    .add(R.id.container, new ForecastFragment()) //container is the id of activity_main.xml's main FrameLayout.
                     .commit();
         }
-
-
 
     }
 
