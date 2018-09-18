@@ -1,10 +1,15 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,6 +31,7 @@ import java.util.Arrays;
 public class ForecastFragment extends android.support.v4.app.Fragment {
 
     private static final String TAG = "ForecastFragment";
+    public static String APIKey = "2a3d28af75a740af1e2614c2a02d26b2";
 
     //Creating our Adapter to collect our data and display in our ListView
     private ArrayAdapter<String> mForecastAdapter;
@@ -33,6 +39,35 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     //Constructor
     public ForecastFragment() {
         //Empty constructor
+    }
+
+    //onCreate method for setting options menu, otherwise, onCreateView is sufficient
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //Add this line in order for this fragment to handle menu events
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.forecastfragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        int id = item.getItemId();
+        if (id == R.id.action_refresh){
+
+            //Create AsyncTask for fetching weather info
+            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+            fetchWeatherTask.execute("25000"); // Peshawar Postal code = 25000
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -67,14 +102,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
 
 
-
-
-
-
-
-
-
-
         return view;
     }
 
@@ -88,12 +115,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
+        protected String doInBackground(String... params) {
 
             //=======================================================Read Data from OpenWeather.org using API====================================================//
 
@@ -104,16 +126,33 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
 
+            String format = "json";
+            String units = "metric";
+            int numDays = 7;
+
             try{
                 // Construct the URL for the OpenWeatherMap query. Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                String baseUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Peshawar&mode=json&units=metric&cnt=7";
-                String apiKey = "&APPID=" + "2a3d28af75a740af1e2614c2a02d26b2";
-                //String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+                String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Peshawar&mode=json&units=metric&cnt=7";
 
-                URL url = new URL(baseUrl.concat(apiKey)); //Create url from base url concatenating api key
+                final String QUERY_PARAM = "q";
+                final String FORMAT_PARAM = "mode";
+                final String UNITS_PARAM = "units";
+                final String DAYS_PARAM = "cnt";
+                final String APPID_PARAM = "APPID";
 
-                Log.d(TAG, "onCreateView: url =  " + url); //Show in logs how concatenation with base ulr worked
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0]) //We have to manually add that
+                        .appendQueryParameter(FORMAT_PARAM, format)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                        .appendQueryParameter(APPID_PARAM, APIKey )
+                        .build();
+
+                //URL url = new URL(FORECAST_BASE_URL.concat(APIKey)); //Old concatenation method
+                URL url = new URL(builtUri.toString()); //Make URL out of our Uri
+
+                Log.v(TAG, "Built URL =  " + url); //Show in logs how concatenation with base ulr worked
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection(); // open url connection with our url
@@ -122,13 +161,12 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer stringBuffer = new StringBuffer();
                 if (inputStream == null){
                     //Nothing to do
                     Log.e(TAG, "onCreateView: inputStream == null" );
                     return null;
                 }
-
-                StringBuffer stringBuffer = new StringBuffer();
 
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -147,6 +185,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
                 //Append all read data from stringBuffer to forecastJsonStr
                 forecastJsonStr = stringBuffer.toString();
+                Log.d(TAG, "forecastJsonStr: " + forecastJsonStr); //To check output
 
             }
 
@@ -170,11 +209,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             }
 
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
         }
 
     }
