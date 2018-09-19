@@ -94,6 +94,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 "Sun 6/29 - Sunny - 20/7"
         };
 
+        
         ArrayList<String> weekForecast = new ArrayList<>(Arrays.asList(data)); //Add dummy data to our ArrayList
 
         // Now that we have some dummy forecast data, create an ArrayAdapter.
@@ -316,6 +317,22 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             return null;
         }
 
+
+        @Override
+        protected void onPostExecute(String[] result) {
+
+            if (result != null){
+                Log.d(TAG, "onPostExecute: result != null");
+                mForecastAdapter.clear();
+                for (String dayForecastStr : result){
+                    mForecastAdapter.add(dayForecastStr);
+                    Log.d(TAG, "onPostExecute: adding dayForecastStr = " + dayForecastStr);
+                }
+                // New data is back from the server.  Hooray!
+                mForecastAdapter.notifyDataSetChanged();
+            }
+
+        }
     }
 
 
