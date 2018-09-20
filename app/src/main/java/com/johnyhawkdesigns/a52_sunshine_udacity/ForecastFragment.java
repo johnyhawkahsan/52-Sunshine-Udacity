@@ -1,5 +1,6 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -12,8 +13,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +68,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-
         int id = item.getItemId();
         if (id == R.id.action_refresh){
 
@@ -77,6 +79,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -109,6 +113,21 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         ListView listView = view.findViewById(R.id.listview_forecast);//Find our list view by id
         listView.setAdapter(mForecastAdapter); // Set adapter for listView
 
+        //============Set onItemClickListener for items that are being clicked
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //String forecast = (String) parent.getItemAtPosition(position);    //Both do the same work
+                String forecast = mForecastAdapter.getItem(position);               //Above line is also correct
+                Toast.makeText(getActivity(), "Position = " + position + ", parent.getItemAtPosition = " + forecast, Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Position = " + position + ", parent.getItemAtPosition = " + parent.getItemAtPosition(position));
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("item", forecast);
+                startActivity(intent);
+                
+            }
+        });
 
 
         return view;
@@ -121,6 +140,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params = string, progress = void, result = String[]
     {
         private final String TAG = FetchWeatherTask.class.getSimpleName();
+        private String city; //I made this global variable to extract passed city info from params[0]
 
         /* The date/time conversion code is going to be moved outside the asynctask later, so for convenience we're breaking it out into its own method now. */
         private String getReadableDateString(long time){
@@ -173,7 +193,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
                 // Get the JSON object representing the day
                 JSONObject dayForecast = weatherArray.getJSONObject(i); //starting from 0th item in the "list"
-                Log.d(TAG, "getting dayForeCast from weatherArray at position = " + i);
+                Log.d(TAG, "getting dayForeCast of " + city + " city from weatherArray at position = " + i);
 
                 //Converting the integer value returned by Calendar.DAY_OF_WEEK to a human-readable String
                 day = gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
@@ -193,9 +213,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
-            
+
+            //Loop through result string to get each item, so that we can print it to the logs.
             for (String s : resultStrs){
-                Log.d(TAG, "Forecast entry: " + s);
+                Log.d(TAG, "getWeatherDataFromJson : Forecast entry for " + city +" : " + s);
             }
 
             return resultStrs;
@@ -236,6 +257,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
                 final String APPID_PARAM = "APPID";
+
+                city = params[0];
 
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0]) //We have to manually add that
@@ -326,7 +349,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 mForecastAdapter.clear();
                 for (String dayForecastStr : result){
                     mForecastAdapter.add(dayForecastStr);
-                    Log.d(TAG, "onPostExecute: adding dayForecastStr = " + dayForecastStr);
+                    Log.d(TAG, "onPostExecute: adding dayForecastStr to Adapter = " + dayForecastStr);
                 }
                 // New data is back from the server.  Hooray!
                 mForecastAdapter.notifyDataSetChanged();

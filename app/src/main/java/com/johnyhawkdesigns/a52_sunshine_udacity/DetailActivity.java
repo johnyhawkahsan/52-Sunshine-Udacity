@@ -1,37 +1,52 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
-//https://home.openweathermap.org/api_keys API
-//2a3d28af75a740af1e2614c2a02d26b2
+public class DetailActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity {
+    private static final String TAG = DetailActivity.class.getCanonicalName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
 
         //Add fragment to our MainActivity
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_activity_main, new ForecastFragment()) //container_activity_main is the id of activity_main.xml's main FrameLayout.
+                    .add(R.id.container_activity_detail, new DetailActivityFragment()) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
                     .commit();
         }
+
+        String forecast = getIntent().getStringExtra("item");
+
+        Log.d(TAG, "onCreate: forecast data received =  " + forecast);
+
+        TextView textView = findViewById(R.id.textView);
+        textView.setText(forecast);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return true;
     }
 
@@ -47,8 +62,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-
-
         return super.onOptionsItemSelected(item);
     }
+
 }
