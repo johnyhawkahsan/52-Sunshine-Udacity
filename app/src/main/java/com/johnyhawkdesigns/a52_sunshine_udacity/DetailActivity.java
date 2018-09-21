@@ -1,5 +1,6 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,7 +29,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
 
-        //Add fragment to our MainActivity
+        //Add fragment to our Activity
         if (savedInstanceState == null){
             Log.d(TAG, "onCreate: adding Fragment DetailActivityFragment");
             getSupportFragmentManager().beginTransaction()
@@ -58,6 +59,9 @@ public class DetailActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            //Start Settings Activity
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 

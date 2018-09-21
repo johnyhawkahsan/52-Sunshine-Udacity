@@ -22,6 +22,8 @@ public class DetailActivityFragment extends Fragment {
         //Empty constructor
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
