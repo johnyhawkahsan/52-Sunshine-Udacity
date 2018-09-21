@@ -122,8 +122,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 Toast.makeText(getActivity(), "Position = " + position + ", parent.getItemAtPosition = " + forecast, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "Position = " + position + ", parent.getItemAtPosition = " + parent.getItemAtPosition(position));
 
+                //===============Launch Detail Activity Using Intent ====================//
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra("item", forecast);
+                //intent.putExtra("item", forecast);              //Initially I did that
+                intent.putExtra(Intent.EXTRA_TEXT, forecast);     //Udacity video shows this which is also a KeyValue Pair
                 startActivity(intent);
                 
             }

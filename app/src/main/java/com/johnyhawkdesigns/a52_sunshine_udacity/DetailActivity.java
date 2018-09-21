@@ -22,6 +22,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("DetailActivity");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -29,17 +30,15 @@ public class DetailActivity extends AppCompatActivity {
 
         //Add fragment to our MainActivity
         if (savedInstanceState == null){
+            Log.d(TAG, "onCreate: adding Fragment DetailActivityFragment");
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container_activity_detail, new DetailActivityFragment()) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
                     .commit();
         }
 
-        String forecast = getIntent().getStringExtra("item");
+        Log.d(TAG, "onCreate:" );
 
-        Log.d(TAG, "onCreate: forecast data received =  " + forecast);
 
-        TextView textView = findViewById(R.id.textView);
-        textView.setText(forecast);
 
     }
 
