@@ -69,7 +69,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
                 Log.d(TAG, "onPreferenceChange: index of List Item = " + index);
 
                 // Set the summary to reflect the new value.
-                preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+                //preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null); //Method by AndroidHive
+                if (index >= 0) {
+                    preference.setSummary(listPreference.getEntries()[index]);
+                }
 
             }
             else {
