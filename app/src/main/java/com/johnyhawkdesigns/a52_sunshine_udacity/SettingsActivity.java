@@ -33,6 +33,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
             // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be updated when the preference changes.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
 
         }
     }
@@ -60,6 +61,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
             String stringValue = newValue.toString();
             Log.d(TAG, "onPreferenceChange: newValue = " + stringValue);
 
+            //If this preference is a list Preference, we need to retrieve correct data according to index values because they were stored using array
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in the preference's 'entries' list (since they have separate labels/values).
                 ListPreference listPreference = (ListPreference) preference;
@@ -71,7 +73,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
             }
             else {
-                Log.d(TAG, "onPreferenceChange: else = setting old value stored in SharedPreferences");
+                //Our data falls within this category because it's an EditTextPreference
+                Log.d(TAG, "onPreferenceChange: else = value of our EditText SharedPreferences");
                 preference.setSummary(stringValue);
             }
             return true;

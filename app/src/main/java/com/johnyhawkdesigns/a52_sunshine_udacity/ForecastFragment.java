@@ -1,8 +1,10 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -71,16 +73,30 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh){
 
-            //Create AsyncTask for fetching weather info
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            fetchWeatherTask.execute("Peshawar"); // Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
+            updateWeather();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //We took the code from Refresh button and created a method so we can use it in onStart method as well
+    private void updateWeather(){
+        //Retrieve location stored in SharedPreferences
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default)); //The 2nd value is default value, if new value is not found
 
+        //Create AsyncTask for fetching weather info
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,17 +113,15 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
                 "Sun 6/29 - Sunny - 20/7"
         };
+        ArrayList<String> dummyWeekForecast = new ArrayList<>(Arrays.asList(data)); //Add dummy data to our ArrayList
 
-        
-        ArrayList<String> weekForecast = new ArrayList<>(Arrays.asList(data)); //Add dummy data to our ArrayList
 
-        // Now that we have some dummy forecast data, create an ArrayAdapter.
         // The ArrayAdapter will take data from a source (like our dummy forecast) and use it to populate the ListView it's attached to.
         mForecastAdapter = new ArrayAdapter<>(
           getActivity(), // The current context (this activity)
           R.layout.list_item_forecast, // The name of the layout ID.
           R.id.list_item_forecast_textview, // The ID of the textview to populate.
-          weekForecast //Our ArrayList fake data
+          dummyWeekForecast //Our ArrayList fake data NOTE: If want to remove Fake data, simply replace it with new ArrayList<> to create an empty arrayList, real data will be added from onStart or Refresh button by updateWeather method
         );
 
         ListView listView = view.findViewById(R.id.listview_forecast);//Find our list view by id
@@ -124,7 +138,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
                 //===============Launch Detail Activity Using Intent ====================//
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                //intent.putExtra("item", forecast);              //Initially I did that
                 intent.putExtra(Intent.EXTRA_TEXT, forecast);     //Udacity video shows this which is also a KeyValue Pair
                 startActivity(intent);
                 
@@ -144,15 +157,19 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         private final String TAG = FetchWeatherTask.class.getSimpleName();
         private String city; //I made this global variable to extract passed city info from params[0]
 
-        /* The date/time conversion code is going to be moved outside the asynctask later, so for convenience we're breaking it out into its own method now. */
-        private String getReadableDateString(long time){
-            // Because the API returns a unix timestamp (measured in seconds), it must be converted to milliseconds in order to be converted to valid date.
-            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
-            return shortenedDateFormat.format(time);
-        }
+        /** Prepare the weather high/lows for presentation. Also see if it's unit is Fahrenheit, convert it mathematically to Fahrenheit from Metric  */
+        private String formatHighLows(double high, double low, String unitType) {
 
-        /** Prepare the weather high/lows for presentation. */
-        private String formatHighLows(double high, double low) {
+            //If passed unit is of type Imperial, then convert it mathematically to Fahrenheit
+            if (unitType.equals(getString(R.string.pref_units_imperial))){
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            }
+            //If unit type is not Metric and we have already checked for Imperial, then it's an exception that should never happen
+            else if (!unitType.equals(getString(R.string.pref_units_metric))){
+                Log.d(TAG, "Unit type not found: " + unitType);
+            }
+
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
@@ -185,8 +202,14 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             //Using the Gregorian Calendar Class instead of Time Class to get current date
             Calendar gc = new GregorianCalendar(); //Note: The object gc gets set to the current time at the time of its creation
 
-            String[] resultStrs = new String[numDays];
+            String[] resultStrs = new String[numDays]; //String of length numDays = 7
 
+            // Data is fetched in Celsius by default. If user prefers to see in Fahrenheit, convert the values here.
+            // We do this rather than fetching in Fahrenheit so that the user can change this option without us having to re-fetch the data once we start storing the values in a database.
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitType = sharedPreferences.getString( getString(R.string.pref_units_key), getString(R.string.pref_units_metric));
+
+            // Loop through JSON weather array data to extract appropriate String values
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low" for the app display
                 String day;
@@ -212,7 +235,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low);
+                //Pass high and low temp data and also pass unitType, so if it's "Imperial" then convert it to fahrenhiet mathematically
+                highAndLow = formatHighLows(high, low, unitType);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
