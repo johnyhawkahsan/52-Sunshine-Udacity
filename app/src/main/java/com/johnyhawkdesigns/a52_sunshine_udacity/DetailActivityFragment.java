@@ -50,6 +50,7 @@ public class DetailActivityFragment extends Fragment {
         }
     }
 
+    //Method to launch intent for Share property to work.
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
@@ -69,9 +70,9 @@ public class DetailActivityFragment extends Fragment {
         //Check if Intent data is not null and also it contains our extra data
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)){
 
-            String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-            Log.d(TAG, "onCreateView: forecast data received, " + Intent.EXTRA_TEXT + " = " + forecast);
-            textView.setText(forecast);
+            mForecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+            Log.d(TAG, "onCreateView: forecast data received, " + Intent.EXTRA_TEXT + " = " + mForecastStr);
+            textView.setText(mForecastStr);
 
         }
 
