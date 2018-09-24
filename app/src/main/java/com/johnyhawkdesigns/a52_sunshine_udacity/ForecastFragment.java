@@ -199,7 +199,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
             // OWM returns daily forecasts based upon the local time of the city that is being asked for, which means that we need to know the GMT offset to translate this data properly.
             // Since this data is also sent in-order and the first day is always the current day, we're going to take advantage of that to get a nice normalized UTC date for all of our weather.
-            //Using the Gregorian Calendar Class instead of Time Class to get current date
+            // Using the Gregorian Calendar Class instead of Time Class to get current date
             Calendar gc = new GregorianCalendar(); //Note: The object gc gets set to the current time at the time of its creation
 
             String[] resultStrs = new String[numDays]; //String of length numDays = 7

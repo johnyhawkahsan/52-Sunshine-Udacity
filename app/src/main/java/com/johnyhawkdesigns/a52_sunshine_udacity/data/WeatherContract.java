@@ -15,7 +15,6 @@ public class WeatherContract {
         // normalize the start date to the beginning of the (UTC) day
         GregorianCalendar date = (GregorianCalendar) GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
         date.setTime(new Date(startDate));
-        date.setTime(new Date(startDate));
         date.set(Calendar.HOUR_OF_DAY, 0);
         date.set(Calendar.MINUTE, 0);
         date.set(Calendar.SECOND, 0);
@@ -25,6 +24,22 @@ public class WeatherContract {
         return date.getTimeInMillis();
     }
 
+    /* Inner class that defines the contents of the location table */
+    public static final class LocationEntry implements BaseColumns{
+        public static final String TABLE_NAME = "location";
+
+        // The location setting string is what will be sent to openweathermap as the location query.
+        public static final String COLUMN_LOCATION_SETTING = "location_setting";
+
+        // Human readable location string, provided by the API.  Because for styling, "Mountain View" is more recognizable than 94043.
+        public static final String COLUMN_CITY_NAME = "city_name";
+
+        // In order to uniquely pinpoint the location on the map when we launch the map intent, we store the latitude and longitude as returned by openweathermap.
+        public static final String COLUMN_COORD_LAT = "coord_lat";
+        public static final String COLUMN_COORD_LONG = "coord_long";
+    }
+
+
     /* Inner class that defines the contents of the weather table */
     public static final class WeatherEntry implements BaseColumns {
 
@@ -32,13 +47,16 @@ public class WeatherContract {
 
         // Column with the foreign key into the location table.
         public static final String COLUMN_LOC_KEY = "location_id";
+
+        // Date, stored as Text with format yyyy-MMM-dd
+        public static final String COLUMN_DATETEXT = "date"; //We're using Date text for now, I think later it will be changed
         // Date, stored as long in milliseconds since the epoch
         public static final String COLUMN_DATE = "date";
+
         // Weather id as returned by API, to identify the icon to be used
         public static final String COLUMN_WEATHER_ID = "weather_id";
 
-        // Short description and long description of the weather, as provided by API.
-        // e.g "clear" vs "sky is clear".
+        // Short description and long description of the weather, as provided by API. e.g "clear" vs "sky is clear".
         public static final String COLUMN_SHORT_DESC = "short_desc";
 
         // Min and max temperatures for the day (stored as floats)
