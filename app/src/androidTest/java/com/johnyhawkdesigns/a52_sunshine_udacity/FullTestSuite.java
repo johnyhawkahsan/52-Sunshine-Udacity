@@ -11,6 +11,7 @@ import org.junit.runners.Suite;
 //This is standard TestSuite method by Java. https://www.tutorialspoint.com/junit/junit_suite_test.htm
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        ExampleInstrumentedTest.class,
         TestDb.class,
 })
 

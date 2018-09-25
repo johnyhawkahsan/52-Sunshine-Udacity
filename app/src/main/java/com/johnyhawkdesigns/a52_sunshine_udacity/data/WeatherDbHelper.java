@@ -30,8 +30,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
                 WeatherContract.LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
                 WeatherContract.LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
-                WeatherContract.LocationEntry.COLUMN_COORD_LONG + "REAL NOT NULL, " +
-                "UNIQUE (" + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + ") ON CONFLICT IGNORE" +
+                WeatherContract.LocationEntry.COLUMN_COORD_LONG + "REAL NOT NULL " +
+                //"UNIQUE (" + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + ") ON CONFLICT IGNORE" + I commented this out because I was getting an error in TestDb. See if commenting it out works.
                 " );";
 
         // Create a table to hold Weather data
