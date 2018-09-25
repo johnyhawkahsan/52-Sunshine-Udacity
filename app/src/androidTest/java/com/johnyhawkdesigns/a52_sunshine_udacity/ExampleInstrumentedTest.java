@@ -22,5 +22,7 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.johnyhawkdesigns.a52_sunshine_udacity", appContext.getPackageName());
+        System.out.println("ExampleInstrumentedTest = useAppContext(): checking context");
+
     }
 }
