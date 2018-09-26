@@ -78,10 +78,10 @@ public class TestDb{
 
 
         //Error: SQLiteDatabase: Error inserting city_name=North Pole coord_lat=64.772 coord_long=147.355 location_setting=99705
-        //Need to find out why this error is occuring.
+        //NOTE: Error solved by just copying and pasting SQL_CREATE_LOCATION_TABLE query from Udacity LoL Very strange because couldn't find any flaw even after looking closely.
 
 
-/*
+
 
         // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made the round trip.
         // Specify which columns you want.
@@ -92,10 +92,11 @@ public class TestDb{
                 WeatherContract.LocationEntry.COLUMN_COORD_LAT,
                 WeatherContract.LocationEntry.COLUMN_COORD_LONG
         };
+
         // A cursor is your primary interface to the query results.
         Cursor cursor = db.query(
                 WeatherContract.LocationEntry.TABLE_NAME,  // Table to Query
-                columns,
+                columns, //String[] columns
                 null, // Columns for the "where" clause
                 null, // Values for the "where" clause
                 null, // columns to group by
@@ -114,19 +115,19 @@ public class TestDb{
             double latitude = cursor.getDouble(latIndex);
             int longIndex = cursor.getColumnIndex((WeatherContract.LocationEntry.COLUMN_COORD_LONG));
             double longitude = cursor.getDouble(longIndex);
-            // Hooray, data was returned!  Assert that it's the right data, and that the database
-            // creation code is working as intended.
-            // Then take a break.  We both know that wasn't easy.
+            // Hooray, data was returned!  Assert that it's the right data, and that the database creation code is working as intended.
             Assert.assertEquals(testCityName, name);
             Assert.assertEquals(testLocationSetting, location);
-            Assert.assertEquals(testLatitude, latitude);
-            Assert.assertEquals(testLongitude, longitude);
+            //Assert.assertEquals(testLatitude, latitude); //Method deprecated, we should use delta. Error returned = Use assertEquals(expected, actual, delta) to compare floating-point numbers
+            Assert.assertEquals(testLatitude, latitude, 0.02); //Check that floating point numbers are equal within a certain tolerance
+            Assert.assertEquals(testLongitude, longitude, 0.02);
+            System.out.println("Returned data:  testCityName = " + name + ", testLocationSetting = " + location + ", latitude = " + latitude + ", longitude = " + longitude );
+
             // Fantastic.  Now that we have a location, add some weather!
         } else {
             // That's weird, it works on MY machine...
             Assert.fail("No values returned :(");
         }
-*/
 
 
     }
