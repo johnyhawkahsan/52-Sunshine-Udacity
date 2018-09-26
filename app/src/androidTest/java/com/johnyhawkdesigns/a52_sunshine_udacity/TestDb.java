@@ -77,11 +77,6 @@ public class TestDb{
         System.out.println(TestDb.TAG + " = testInsertReadDb(): trying to test Inserting. locationRowId = " + locationRowId);
 
 
-        //Error: SQLiteDatabase: Error inserting city_name=North Pole coord_lat=64.772 coord_long=147.355 location_setting=99705
-        //NOTE: Error solved by just copying and pasting SQL_CREATE_LOCATION_TABLE query from Udacity LoL Very strange because couldn't find any flaw even after looking closely.
-
-
-
 
         // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made the round trip.
         // Specify which columns you want.
@@ -121,17 +116,80 @@ public class TestDb{
             //Assert.assertEquals(testLatitude, latitude); //Method deprecated, we should use delta. Error returned = Use assertEquals(expected, actual, delta) to compare floating-point numbers
             Assert.assertEquals(testLatitude, latitude, 0.02); //Check that floating point numbers are equal within a certain tolerance
             Assert.assertEquals(testLongitude, longitude, 0.02);
-            System.out.println("Returned data:  testCityName = " + name + ", testLocationSetting = " + location + ", latitude = " + latitude + ", longitude = " + longitude );
+            System.out.println("Returned Location data:  testCityName = " + name + ", testLocationSetting = " + location + ", latitude = " + latitude + ", longitude = " + longitude );
 
-            // Fantastic.  Now that we have a location, add some weather!
         } else {
             // That's weird, it works on MY machine...
             Assert.fail("No values returned :(");
         }
 
 
-    }
+        // ===================================================Testing Weather Data=============================================================//
+        ContentValues weatherValues = new ContentValues();
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, "20141205");
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
 
+        long weatherRowId;
+        weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherValues); //Put content values into "weather" table
+        Assert.assertTrue(weatherRowId != -1);
+        System.out.println(TestDb.TAG + " = weatherRowId = " + weatherRowId);
+
+
+        Cursor weatherCursor = db.query(
+                WeatherContract.WeatherEntry.TABLE_NAME,  // Table to Query
+                null, // leaving "columns" null just returns all the columns
+                null, // Columns for the "where" clause
+                null, // Values for the "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null // sort order
+        );
+
+        if (weatherCursor.moveToFirst()){
+            int dateIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATETEXT);
+            String date = cursor.getString(dateIndex);
+
+            int degreeIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DEGREES);
+            String degree = cursor.getString(degreeIndex);
+
+            int humidIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_HUMIDITY);
+            String humidity = cursor.getString(humidIndex);
+
+            int pressureIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_PRESSURE);
+            String pressure = cursor.getString(pressureIndex);
+
+            int maxIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
+            double max = cursor.getDouble(maxIndex);
+
+            int minIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP);
+            double min = cursor.getDouble(minIndex);
+
+            int descIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
+            String desc = cursor.getString(descIndex);
+
+            int windIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED);
+            double windSpeed = cursor.getDouble(windIndex);
+
+            int weatherIdIndex = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID);
+            int weather_Id = cursor.getInt(weatherIdIndex);
+
+            System.out.println("Returned Weather data:  date = " + date + ", degree = " + degree + ", humidity = " + humidity + ", \n pressure = " + pressure +
+                    ", max = " + max + ", min = " + min + ", desc = " + desc + ", windSpeed = " + windSpeed + ", weather_Id = " + weather_Id);
+
+
+        } else {
+            Assert.fail("No weather data returned");
+        }
+
+    }
 
 
 
