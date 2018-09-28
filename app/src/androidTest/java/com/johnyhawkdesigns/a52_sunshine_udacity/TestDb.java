@@ -29,21 +29,18 @@ public class TestDb{
         mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME); //We delete any previous database, starting out clear
         db = new WeatherDbHelper(mContext).getWritableDatabase();
         System.out.println(TestDb.TAG + " = setUp()");
-
     }
 
     @After
     public void finish(){
         db.close();
         System.out.println(TestDb.TAG + " = finish(): db.close()");
-
     }
 
     @Test
     public void testPreConditions(){
         Assert.assertNotNull(db);
         System.out.println(TestDb.TAG + " = testPreConditions(): checking if db object is not null");
-
     }
 
     //Testing creation of Database, if Database is open or not
@@ -52,6 +49,7 @@ public class TestDb{
         Assert.assertEquals("Database is not open error",true, db.isOpen());
         System.out.println(TestDb.TAG + " = testCreateDb(): running Assert.assertEquals method to ensure Database is open");
     }
+
 
     //Database insert operation test
     @Test
@@ -199,8 +197,14 @@ public class TestDb{
 
 
 
+    }
 
-
+    //Method to test normalize date function in WeatherContract.class
+    @Test
+    public void testNormalizeDateFunction(){
+        long startDateTest = 20180928;
+        long normalizedDate = WeatherContract.normalizeDate(startDateTest);
+        System.out.println(TestDb.TAG + " = normalizedDate =  " + normalizedDate);
     }
 
 
