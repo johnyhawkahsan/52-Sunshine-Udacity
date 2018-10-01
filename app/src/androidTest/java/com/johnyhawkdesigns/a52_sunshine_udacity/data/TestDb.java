@@ -1,4 +1,4 @@
-package com.johnyhawkdesigns.a52_sunshine_udacity;
+package com.johnyhawkdesigns.a52_sunshine_udacity.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,10 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
-
-import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
-import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherDbHelper;
 
 import org.junit.After;
 import org.junit.Assert;

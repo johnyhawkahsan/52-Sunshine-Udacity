@@ -1,4 +1,4 @@
-package com.johnyhawkdesigns.a52_sunshine_udacity;
+package com.johnyhawkdesigns.a52_sunshine_udacity.data;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

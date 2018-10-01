@@ -1,9 +1,8 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
-import android.support.test.runner.AndroidJUnit4;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import com.johnyhawkdesigns.a52_sunshine_udacity.data.ExampleInstrumentedTest;
+import com.johnyhawkdesigns.a52_sunshine_udacity.data.TestDb;
+import com.johnyhawkdesigns.a52_sunshine_udacity.data.TestUriMatcher;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -13,6 +12,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         ExampleInstrumentedTest.class,
         TestDb.class,
+        TestUriMatcher.class,
 })
 
 public class FullTestSuite {

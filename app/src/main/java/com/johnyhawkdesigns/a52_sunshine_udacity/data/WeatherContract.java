@@ -49,7 +49,7 @@ public class WeatherContract {
     public static final class LocationEntry implements BaseColumns{
 
         //Build content uri to get path location
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();                                   // content://com.johnyhawkdesigns.a52_sunshine_udacity/location/
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();                                   /** content://com.johnyhawkdesigns.a52_sunshine_udacity/location/*/
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;         // vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/location
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;   // vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/location
 
