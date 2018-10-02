@@ -2,6 +2,7 @@ package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.ExampleInstrumentedTest;
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.TestDb;
+import com.johnyhawkdesigns.a52_sunshine_udacity.data.TestProvider;
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.TestUriMatcher;
 
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.junit.runners.Suite;
         ExampleInstrumentedTest.class,
         TestDb.class,
         TestUriMatcher.class,
+        TestProvider.class,
 })
 
 public class FullTestSuite {

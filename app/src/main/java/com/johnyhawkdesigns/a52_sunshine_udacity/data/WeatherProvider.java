@@ -22,7 +22,7 @@ public class WeatherProvider extends ContentProvider{
     private WeatherDbHelper mOpenHelper;
 
 
-    /* This UriMatcher will match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE, and LOCATION integer constants defined above.  You can test this by uncommenting the testUriMatcher test within TestUriMatcher. */
+    /** This UriMatcher will match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE, and LOCATION integer constants defined above. You can test this by uncommenting the testUriMatcher test within TestUriMatcher. */
     public static UriMatcher buildUriMatcher(){
 
         // All paths added to the UriMatcher have a corresponding code to return when a match is found.  The code passed into the constructor represents the code to return for the root URI.
@@ -44,7 +44,7 @@ public class WeatherProvider extends ContentProvider{
     @Override
     public boolean onCreate() {
         mOpenHelper = new WeatherDbHelper(getContext());
-        return true;
+        return true; //Tells Android that our Content provider has been created successfully.
     }
 
     @Nullable
@@ -52,6 +52,8 @@ public class WeatherProvider extends ContentProvider{
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         return null;
     }
+
+
 
     @Nullable
     @Override
@@ -65,8 +67,10 @@ public class WeatherProvider extends ContentProvider{
                 return WeatherContract.WeatherEntry.CONTENT_TYPE;
             case WEATHER:
                 return WeatherContract.WeatherEntry.CONTENT_TYPE;
-                default:
-                    throw new UnsupportedOperationException("Unknown uri: " + uri);
+            case LOCATION:
+                return WeatherContract.LocationEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
     }
 

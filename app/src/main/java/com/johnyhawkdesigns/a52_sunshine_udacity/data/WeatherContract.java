@@ -67,6 +67,11 @@ public class WeatherContract {
         public static final String COLUMN_COORD_LAT = "coord_lat";
         public static final String COLUMN_COORD_LONG = "coord_long";
 
+        /**
+         * This method will build location Uri when we pass id. This method is built within WeatherContract's inline class LocationEntry
+         * @param id long = id
+         * @return Uri = ContentUris.withAppendedId(CONTENT_URI, id)
+         */
         public static Uri buildLocationUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
@@ -121,6 +126,11 @@ public class WeatherContract {
         // Degrees are meteorological degrees (e.g, 0 is north, 180 is south).  Stored as floats.
         public static final String COLUMN_DEGREES = "degrees";
 
+        /**
+         * This method will build weather Uri when we pass id. This method is built within WeatherContract's inline class LocationEntry
+         * @param id long = id
+         * @return Uri = ContentUris.withAppendedId(CONTENT_URI, id)
+         */
         public static Uri buildWeatherUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
