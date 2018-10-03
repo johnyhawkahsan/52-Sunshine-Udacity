@@ -46,22 +46,17 @@ public class TestDb{
         System.out.println(TestDb.TAG + " = testCreateDb(): running Assert.assertEquals method to ensure Database is open");
     }
 
+    public long insertLocation(){
+        long test = 0;
+        return test;
+    }
 
     //Database insert operation test
     @Test
     public void testInsertReadDb(){
 
         // Test data we're going to insert into the DB to see if it works.
-        String testCityName  = "North Pole";
-        String testLocationSetting = "99705";
-        double testLatitude = 64.772;
-        double testLongitude = 147.355;
-
-        ContentValues values = new ContentValues();
-        values.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, testCityName );
-        values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, testLocationSetting);
-        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, testLatitude);
-        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, testLongitude);
+        ContentValues values = TestUtilities.createNorthPoleLocationValues();
 
         long locationRowId;
         locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values); //Put content values into "location" table
@@ -72,8 +67,7 @@ public class TestDb{
 
 
 
-        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made the round trip.
-        // Specify which columns you want.
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made the round trip. Specify which columns you want.
         String[] columns = {
                 WeatherContract.LocationEntry._ID,
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
@@ -105,26 +99,16 @@ public class TestDb{
             int longIndex = cursorLoc.getColumnIndex((WeatherContract.LocationEntry.COLUMN_COORD_LONG));
             double longitude = cursorLoc.getDouble(longIndex);
             // Hooray, data was returned!  Assert that it's the right data, and that the database creation code is working as intended.
-            Assert.assertEquals(testCityName, name);
-            Assert.assertEquals(testLocationSetting, location);
+            Assert.assertEquals("North Pole", name);
+            Assert.assertEquals("99705", location);
             //Assert.assertEquals(testLatitude, latitude); //Method deprecated, we should use delta. Error returned = Use assertEquals(expected, actual, delta) to compare floating-point numbers
-            Assert.assertEquals(testLatitude, latitude, 0.02); //Check that floating point numbers are equal within a certain tolerance
-            Assert.assertEquals(testLongitude, longitude, 0.02);
+            Assert.assertEquals(64.772, latitude, 0.02); //Check that floating point numbers are equal within a certain tolerance
+            Assert.assertEquals(147.355, longitude, 0.02);
             System.out.println("Returned Location data:  testCityName = " + name + ", testLocationSetting = " + location + ", latitude = " + latitude + ", longitude = " + longitude );
 
 
             // ===================================================Testing Weather Data=============================================================//
-            ContentValues weatherValues = new ContentValues();
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, "20141205");
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5);
-            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+            ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId); //Use method inside TestUtilities to create Weather Content Values
 
             long weatherRowId;
             weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherValues); //Put content values into "weather" table

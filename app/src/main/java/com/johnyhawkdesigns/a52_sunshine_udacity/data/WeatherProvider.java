@@ -1,6 +1,7 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -41,18 +42,13 @@ public class WeatherProvider extends ContentProvider{
     }
 
 
+
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new WeatherDbHelper(getContext());
         return true; //Tells Android that our Content provider has been created successfully.
     }
-
-    @Nullable
-    @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
-    }
-
 
 
     @Nullable
@@ -69,9 +65,75 @@ public class WeatherProvider extends ContentProvider{
                 return WeatherContract.WeatherEntry.CONTENT_TYPE;
             case LOCATION:
                 return WeatherContract.LocationEntry.CONTENT_TYPE;
+            case LOCATION_ID:
+                return WeatherContract.LocationEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+    }
+
+
+    @Nullable
+    @Override
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        // Here's the switch statement that, given a URI, will determine what kind of request it is, and query the database accordingly.
+        Cursor retCursor;
+        switch (sUriMatcher.match(uri)){
+            case WEATHER_WITH_LOCATION_AND_DATE:
+            {
+                retCursor = null;
+                break;
+            }
+            case WEATHER_WITH_LOCATION:
+            {
+                retCursor = null;
+                break;
+            }
+            case WEATHER:
+            {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case LOCATION_ID:
+            {
+                long id = ContentUris.parseId(uri);
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.LocationEntry.TABLE_NAME,
+                        projection,
+                        String.format("%s = %d", WeatherContract.LocationEntry._ID, id),
+                        null,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case LOCATION:
+            {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.LocationEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Nullable
