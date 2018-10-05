@@ -1,6 +1,9 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity.data;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
@@ -8,6 +11,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Map;
+import java.util.Set;
+
 
 /*  Students: These are functions and some test data to make it easier to test your database and Content Provider.
     Note that you'll want your WeatherContract class to exactly match the one in our solution to use these as-given.
@@ -31,14 +38,10 @@ public class TestUtilities {
         System.out.println(TAG + " = finish()");
     }
 
-    @Test
-    public void test1(){
-        System.out.println(TAG + " = test1");
-
-    }
 
     //Create Weather Values and use in TestDb. Location Row id is passed here "COLUMN_LOC_KEY" is foreign key
     public static ContentValues createWeatherValues(long locationRowId){
+        System.out.println(TAG + " = createWeatherValues(locationRowId =" + locationRowId + ")");
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, TEST_DATETEXT);
@@ -54,6 +57,7 @@ public class TestUtilities {
     }
 
     public static ContentValues createNorthPoleLocationValues(){
+        System.out.println(TAG + " = createNorthPoleLocationValues()");
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
@@ -63,5 +67,54 @@ public class TestUtilities {
         return values;
     }
 
+    static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
+        System.out.println(TAG + " = validateCursor()");
+        Assert.assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
+        validateCurrentRecord(error, valueCursor, expectedValues);
+        valueCursor.close();
+    }
+
+
+
+    //This method checks all our expectedValues against record returned by Cursor.
+    public static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues){
+
+        System.out.println(TAG + " = validateCurrentRecord()");
+
+        Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
+
+        for (Map.Entry<String, Object> entry : valueSet){
+            String columnName = entry.getKey();
+            int idx = valueCursor.getColumnIndex(columnName);
+            Assert.assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
+            System.out.println(TAG + " : columnName = " + columnName + ", associated idx = " + idx);
+
+            String expectedValue = entry.getValue().toString();
+            Assert.assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, valueCursor.getString(idx));
+            System.out.println(TAG + " : expectedValue = " + expectedValue);
+
+        }
+    }
+
+
+
+    /*
+        Students: You can uncomment this function once you have finished creating the LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
+     */
+    static long insertNorthPoleLocationValues(Context context) {
+        System.out.println(TAG + " = insertNorthPoleLocationValues()");
+        // insert our test records into the database
+        WeatherDbHelper dbHelper = new WeatherDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+
+        long locationRowId;
+        locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
+
+        // Verify we got a row back.
+        Assert.assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
+
+        return locationRowId;
+    }
 
 }
