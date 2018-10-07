@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.format.Time;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class WeatherContract {
+
+    private static final String TAG = WeatherContract.class.getSimpleName();
 
     // The "Content authority" is a name for the entire content provider, similar to the relationship between a domain name and its website. A convenient string to use for the content authority is the package name for the app, which is guaranteed to be unique on the device.
     public static final String CONTENT_AUTHORITY = "com.johnyhawkdesigns.a52_sunshine_udacity";
@@ -37,7 +40,19 @@ public class WeatherContract {
         date.set(Calendar.MILLISECOND, 0);
 
         //transform your calendar to a long in the way you prefer
+        System.out.println(TAG + " : normalizeDate() = date.getTimeInMillis() = " + date.getTimeInMillis());
         return date.getTimeInMillis();
+    }
+
+    //=============================Udacity Deprecated Method to Normalize Date=============================//
+
+    // To make it easy to query for the exact date, we normalize all dates that go into the database to the start of the the Julian day at UTC.
+    public static long normalizeDateUdacity(long startDate) {
+        Time time = new Time(); // normalize the start date to the beginning of the (UTC) day
+        time.set(startDate);
+        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
+        System.out.println(TAG + " : normalizeDateUdacity() = time.setJulianDay(julianDay) = " + time.setJulianDay(julianDay));
+        return time.setJulianDay(julianDay);
     }
 
 

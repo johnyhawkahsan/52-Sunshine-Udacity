@@ -204,10 +204,26 @@ public class TestDb{
     //Method to test normalize date function in WeatherContract.class
     @Test
     public void testNormalizeDateFunction(){
+        long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
         long startDateTest = 20180928;
-        long normalizedDate = WeatherContract.normalizeDate(startDateTest);
+        long TEST_DATE = 1419033600L;  // December 20th, 2014
+        String TEST_DATETEXT = "1419033600L";  // December 20th, 2014
+        long normalizedDate = WeatherContract.normalizeDate(TEST_DATE);
         System.out.println(TestDb.TAG + " = normalizedDate =  " + normalizedDate);
     }
+
+    //Method to test normalize date function of deprecated Udacity tutorial
+    @Test
+    public void testNormalizeDateFunctionUdacity(){
+        long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
+        long startDateTest = 20180928;
+        long TEST_DATE = 1419033600L;  // December 20th, 2014
+        String TEST_DATETEXT = "1419033600L";  // December 20th, 2014
+        long normalizedDate = WeatherContract.normalizeDate(TEST_DATE);
+        System.out.println(TestDb.TAG + " = testNormalizeDateFunctionUdacity() =  " + normalizedDate);
+    }
+
+
 
 
     /***
@@ -333,12 +349,9 @@ public class TestDb{
      } else {
      // That's weird, it works on MY machine...
      Assert.fail("No values returned :(");
+        }
      }
-
-
-
-     }
-     */
+*/
 
 
 
