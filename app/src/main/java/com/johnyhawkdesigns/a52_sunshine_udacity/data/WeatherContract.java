@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -179,7 +180,21 @@ public class WeatherContract {
                 return 0;
         }
 
-
     }
 
+
+    public static final String DATE_FORMAT = "yyyyMMdd";
+
+
+    /**
+     * Converts Date class to a string representation, used for easy comparison and database lookup.
+     * @param date The input date
+     * @return a DB-friendly representation of the date, using the format defined in DATE_FORMAT.
+     */
+    public static String getDbDateString(Date date){
+        // Because the API returns a unix timestamp (measured in seconds),
+        // it must be converted to milliseconds in order to be converted to valid date.
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        return sdf.format(date);
+    }
 }
