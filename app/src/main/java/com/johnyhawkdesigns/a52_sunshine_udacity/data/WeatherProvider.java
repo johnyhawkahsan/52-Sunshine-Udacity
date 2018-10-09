@@ -303,6 +303,7 @@ public class WeatherProvider extends ContentProvider{
     }
 
 
+    //This is used to insert lets say 7 days weather data to our database, we would need bulkInsert method
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
