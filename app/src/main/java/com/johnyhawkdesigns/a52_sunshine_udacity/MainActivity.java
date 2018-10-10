@@ -16,6 +16,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String APIKey = "2a3d28af75a740af1e2614c2a02d26b2"; //My openweathermap api key
+
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
