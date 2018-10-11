@@ -51,7 +51,7 @@ public class TestUtilities {
         System.out.println(TAG + " = createWeatherValues(locationRowId =" + locationRowId + ")");
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, TEST_DATETEXT);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, TEST_DATE);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
@@ -138,7 +138,28 @@ public class TestUtilities {
         return locationRowId;
     }
 
+    static final int BULK_INSERT_RECORDS_TO_INSERT = 10;
+    static ContentValues[] createBulkInsertWeatherValues(long locationRowId) {
+        long currentTestDate = TestUtilities.TEST_DATE;
+        long millisecondsInADay = 1000*60*60*24;
+        ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT];
 
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, currentTestDate+= millisecondsInADay ) {
+            ContentValues weatherValues = new ContentValues();
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, currentTestDate);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2 + 0.01 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3 - 0.01 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75 + i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65 - i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5 + 0.2 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+            returnContentValues[i] = weatherValues;
+        }
+        return returnContentValues;
+    }
 
 
 

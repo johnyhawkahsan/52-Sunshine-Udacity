@@ -65,9 +65,9 @@ public class WeatherContract {
     public static final class LocationEntry implements BaseColumns{
 
         //Build content uri to get path location
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();                                   /** content://com.johnyhawkdesigns.a52_sunshine_udacity/location/*/
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;         // vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/location
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;   // vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/location
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();                                   /** content://com.johnyhawkdesigns.a52_sunshine_udacity/location/ */
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;         /** vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/location */
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;   /** vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/location */
 
 
 
@@ -106,9 +106,9 @@ public class WeatherContract {
     public static final class WeatherEntry implements BaseColumns {
 
         //Build content uri to get weather entry
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();                                   // content://com.johnyhawkdesigns.a52_sunshine_udacity/weather/
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;         // vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/weather
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;   // vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/weather
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();                                   /** content://com.johnyhawkdesigns.a52_sunshine_udacity/weather/ */
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;         /** vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/weather */
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;   /** vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/weather */
 
         public static final String TABLE_NAME = "weather";
 
@@ -198,4 +198,5 @@ public class WeatherContract {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         return sdf.format(date);
     }
+
 }

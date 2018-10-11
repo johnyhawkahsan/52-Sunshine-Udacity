@@ -22,9 +22,8 @@ public class WeatherProvider extends ContentProvider{
     public static final int LOCATION = 300;
     public static final int LOCATION_ID = 301;
 
-    // The URI matcher used by this content provider
-    public static final UriMatcher sUriMatcher = buildUriMatcher();
 
+    public static final UriMatcher sUriMatcher = buildUriMatcher(); // The URI matcher used by this content provider
     private WeatherDbHelper mOpenHelper;
     private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
 
@@ -66,12 +65,13 @@ public class WeatherProvider extends ContentProvider{
         String[] selectionArgs;
         String selection;
 
+
         if (startDate == 0) {
             selection = sLocationSettingSelection;
             selectionArgs = new String[]{locationSetting};
         } else {
-            selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
             selection = sLocationSettingWithStartDateSelection;
+            selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
         }
 
         return sWeatherByLocationSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -104,8 +104,6 @@ public class WeatherProvider extends ContentProvider{
 
 
 
-
-
     /** This UriMatcher will match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE, and LOCATION integer constants defined above. You can test this by uncommenting the testUriMatcher test within TestUriMatcher. */
     public static UriMatcher buildUriMatcher(){
 
@@ -133,10 +131,14 @@ public class WeatherProvider extends ContentProvider{
         return true; //Tells Android that our Content provider has been created successfully.
     }
 
-
+    /*
+        Students: Here's where you'll code the getType function that uses the UriMatcher.  You can
+        test this by uncommenting testGetType in TestProvider.
+    */
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
+        // Use the Uri Matcher to determine what kind of URI this is.
         final int match = sUriMatcher.match(uri);
 
         switch (match){
@@ -230,7 +232,6 @@ public class WeatherProvider extends ContentProvider{
         switch (match){
             case WEATHER:
             {
-
                 long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, values);
                 if (_id > 0)
                     returnUri = WeatherContract.WeatherEntry.buildWeatherUri(_id);
@@ -314,7 +315,7 @@ public class WeatherProvider extends ContentProvider{
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
+                        //normalizeDate(value);
                         long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
@@ -337,7 +338,6 @@ public class WeatherProvider extends ContentProvider{
             long dateValue = values.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
             values.put(WeatherContract.WeatherEntry.COLUMN_DATE, WeatherContract.normalizeDateUdacity(dateValue));
             System.out.println(TAG + " : normalizeDate() = WeatherContract.normalizeDate(dateValue) = " + WeatherContract.normalizeDate(dateValue));
-
         }
     }
 }

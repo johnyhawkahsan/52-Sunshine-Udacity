@@ -41,16 +41,16 @@ public class TestProvider {
 
 
 
-/*
+
     // This test uses the database directly to insert and then uses the ContentProvider to read out the data.
     // Uncomment this test to see if your location queries are performing correctly.
-    @Test
+    //@Test
     public void testBasicLocationQueries() {
 
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
 
-        long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext); //Simple db method to insert new data and get locationRowId
-        //long locationRowId = TestUtilities.insertNorthPoleLocationValuesUsingContentProvider(mContext); //New Content resolver method to insert new data and get locationRowId
+        //long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext); //Simple db method to insert new data and get locationRowId
+        long locationRowId = TestUtilities.insertNorthPoleLocationValuesUsingContentProvider(mContext); //New Content resolver method to insert new data and get locationRowId
 
         System.out.println(TAG + ": testBasicLocationQueries() = locationRowId = " + locationRowId);
         Assert.assertTrue("Location row could not be added.", locationRowId != -1); // Verify we got a row back.
@@ -76,7 +76,6 @@ public class TestProvider {
             System.out.println(TAG + ": locationCursor.getNotificationUri() is expected value, while real object is WeatherContract.LocationEntry.CONTENT_URI ");
         }
     }
-*/
 
 
 
@@ -84,10 +83,11 @@ public class TestProvider {
 
 
 
-/*
+
+
     // This test uses the database directly to insert and then uses the ContentProvider to read out the data.
     // Uncomment this test to see if the basic weather query functionality given in the ContentProvider is working correctly.
-    @Test
+    //@Test
     public void testBasicWeatherQuery() {
 
         long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
@@ -126,14 +126,14 @@ public class TestProvider {
             //Assert.fail("No Weather data returned!");
         }
     }
-*/
 
 
 
 
-/*
 
-    @Test
+
+
+   //@Test
     public void testInsertContentUri() {
 
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
@@ -187,7 +187,7 @@ public class TestProvider {
         //After data is written to the database, now we need to test our delete functionality
         deleteAllRecordsFromProvider();
     }
-*/
+
 
 
 
@@ -196,7 +196,7 @@ public class TestProvider {
 
 
     // This test uses the provider to insert and then update the data. Uncomment this test to see if your update location is functioning correctly.
-    @Test
+    //@Test
     public void testUpdateLocation() {
         // Create a new map of values, where column names are the keys
         ContentValues values = TestUtilities.createNorthPoleLocationValues();
@@ -251,18 +251,19 @@ public class TestProvider {
 
 
     //This method is directly copied from TestDb.java class. There we were testing SQLite database, here we are using it to test ContentResolver.
-    @Test
+    //@Test
     public void testDeleteDb(){
         //delete all records from DB using database functions only
         //deleteAllRecordsFromDB();
+
         //delete all records from DB using Content provider method
-        //deleteAllRecordsFromProvider();
+        deleteAllRecordsFromProvider();
     }
 
-/*
+
     // This test doesn't touch the database.  It verifies that the ContentProvider returns the correct type for each type of URI that it can handle.
     // Students: Uncomment this test to verify that your implementation of GetType is functioning correctly.
-    @Test
+    //@Test
     public void testGetType(){
         // content://com.example.android.sunshine.app/weather/
         String type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.CONTENT_URI);
@@ -278,7 +279,7 @@ public class TestProvider {
         System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.buildWeatherLocation(testLocation) = " + WeatherContract.WeatherEntry.CONTENT_TYPE);
 
 
-        String testDate = "1419120000L"; // December 21st, 2014
+        Long testDate = 1419120000L; // December 21st, 2014
         // content://com.example.android.sunshine.app/weather/94074/20140612
         type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(testLocation, testDate));
         // vnd.android.cursor.item/com.example.android.sunshine.app/weather/1419120000
@@ -293,16 +294,16 @@ public class TestProvider {
         System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.CONTENT_TYPE = " + WeatherContract.WeatherEntry.CONTENT_TYPE);
 
     }
-*/
 
 
 
-/*
+
+
 
     // Make sure we can still delete after adding/updating stuff
     // Student: Uncomment this test after you have completed writing the insert functionality in your provider.
     // It relies on insertions with testInsertReadProvider, so insert and query functionality must also be complete before this test can be used.
-    @Test
+    //@Test
     public void testInsertReadProvider() {
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
 
@@ -312,14 +313,12 @@ public class TestProvider {
         Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, testValues);
         System.out.println(TAG + " :testInsertReadProvider(): locationUri = " + locationUri);
 
-
         // Did our content observer get called?  Students:  If this fails, your insert location isn't calling getContext().getContentResolver().notifyChange(uri, null);
         tco.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(tco);
 
         long locationRowId = ContentUris.parseId(locationUri);
         System.out.println(TAG + " :testInsertReadProvider(): locationRowId = " + locationRowId);
-
 
         // Verify we got a row back.
         Assert.assertTrue(locationRowId != -1);
@@ -376,7 +375,7 @@ public class TestProvider {
 
         // Get the joined Weather and Location data with a start date
         weatherCursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATETEXT),
+                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE),
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
@@ -386,7 +385,7 @@ public class TestProvider {
 
         // Get the joined Weather data for a specific date
         weatherCursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocationWithDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATETEXT),
+                WeatherContract.WeatherEntry.buildWeatherLocationWithDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE),
                 null,
                 null,
                 null,
@@ -394,11 +393,81 @@ public class TestProvider {
         );
         TestUtilities.validateCursor("testInsertReadProvider.  Error validating joined Weather and Location data for a specific date.", weatherCursor, weatherValues);
     }
-*/
 
 
 
 
+
+
+
+
+
+
+
+
+    // Student: Uncomment this test after you have completed writing the BulkInsert functionality in your provider.  Note that this test will work with the built-in (default) provider
+    // implementation, which just inserts records one-at-a-time, so really do implement the BulkInsert ContentProvider function.
+    @Test
+    public void testBulkInsert() {
+
+        // first, let's create a location value
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, testValues);
+        long locationRowId = ContentUris.parseId(locationUri);
+
+        // Verify we got a row back.
+        Assert.assertTrue(locationRowId != -1);
+
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made the round trip.
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                WeatherContract.LocationEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        TestUtilities.validateCursor("testBulkInsert. Error validating LocationEntry.", cursor, testValues);
+
+        // Now we can bulkInsert some weather.  In fact, we only implement BulkInsert for weather entries.  With ContentProviders, you really only have to implement the features you use, after all.
+        ContentValues[] bulkInsertContentValues = TestUtilities.createBulkInsertWeatherValues(locationRowId);
+
+        // Register a content observer for our bulk insert.
+        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(WeatherContract.WeatherEntry.CONTENT_URI, true, weatherObserver);
+
+        int insertCount = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, bulkInsertContentValues);
+
+        // Students:  If this fails, it means that you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
+        // ContentProvider method.
+        weatherObserver.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(weatherObserver);
+
+        Assert.assertEquals(insertCount, TestUtilities.BULK_INSERT_RECORDS_TO_INSERT);
+
+        // A cursor is your primary interface to the query results.
+        cursor = mContext.getContentResolver().query(
+                WeatherContract.WeatherEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                WeatherContract.WeatherEntry.COLUMN_DATE + " ASC"  // sort order == by DATE ASCENDING
+        );
+
+        // we should have as many records in the database as we've inserted
+        Assert.assertEquals(cursor.getCount(), TestUtilities.BULK_INSERT_RECORDS_TO_INSERT);
+
+        // and let's make sure they match the ones we created
+        cursor.moveToFirst();
+        for ( int i = 0; i < TestUtilities.BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
+            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
+                    cursor, bulkInsertContentValues[i]);
+        }
+        cursor.close();
+    }
 
 
 

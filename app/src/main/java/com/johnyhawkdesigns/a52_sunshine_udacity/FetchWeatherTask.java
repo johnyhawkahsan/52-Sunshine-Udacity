@@ -220,7 +220,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
             // add to database
             if (cVVector.size() > 0) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
+                cVVector.toArray(cvArray); //Convert cVVector to an array for bulk insert to work
                 inserted = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
 
