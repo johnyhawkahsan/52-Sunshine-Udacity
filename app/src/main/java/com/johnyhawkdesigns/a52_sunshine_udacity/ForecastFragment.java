@@ -26,22 +26,10 @@ import android.widget.Toast;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+
 
 
 /**
@@ -52,7 +40,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String TAG = ForecastFragment.class.getSimpleName();
 
     //Creating our Adapter to collect our data and display in our ListView
-    private ArrayAdapter<String> mForecastAdapter;
+    //private ArrayAdapter<String> mForecastAdapter; // Now we don't need this ArrayAdapter<String>. Instead, we use our newly created
+    private ForecastAdapter mForecastAdapter;
 
     private String mLocation;
     private static final int FORECAST_LOADER = 0;
@@ -104,7 +93,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        // Handle action bar item clicks here. The action bar will automatically handle clicks on the Home/Up button, so long as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh){
 
@@ -120,43 +109,34 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        String[] data = {
-                "Mon 6/23 - Sunny - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-        ArrayList<String> dummyWeekForecast = new ArrayList<>(Arrays.asList(data)); //Add dummy data to our ArrayList
-
-
         // The ArrayAdapter will take data from a source (like our dummy forecast) and use it to populate the ListView it's attached to.
-        mForecastAdapter = new ArrayAdapter<>(
-                getActivity(), // The current context (this activity)
-                R.layout.list_item_forecast, // The name of the layout ID.
-                R.id.list_item_forecast_textview, // The ID of the textview to populate.
-                dummyWeekForecast //Our ArrayList fake data NOTE: If want to remove Fake data, simply replace it with new ArrayList<> to create an empty arrayList, real data will be added from onStart or Refresh button by updateWeather method
-        );
+        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         ListView listView = view.findViewById(R.id.listview_forecast);//Find our list view by id
         listView.setAdapter(mForecastAdapter); // Set adapter for listView
 
         //============Set onItemClickListener for items that are being clicked
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String forecast = (String) parent.getItemAtPosition(position);    //Both do the same work
-                String forecast = mForecastAdapter.getItem(position);               //Above line is also correct
+
+
+                String forecast = (String) parent.getItemAtPosition(position);
                 Toast.makeText(getActivity(), "Position = " + position + ", parent.getItemAtPosition = " + forecast, Toast.LENGTH_LONG).show();
                 Log.d(TAG, "Position = " + position + ", parent.getItemAtPosition = " + parent.getItemAtPosition(position));
 
-                //===============Launch Detail Activity Using Intent ====================//
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, forecast);     //Udacity video shows this which is also a KeyValue Pair
-                startActivity(intent);
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null if it cannot seek to that position.
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                if (cursor != null) {
+                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                    //===============Launch Detail Activity Using Intent ====================//
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                            ));
+                    startActivity(intent);
+                }
 
             }
         });
@@ -172,14 +152,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     }
 
+    // since we read the location when we create the loader, all we need to do is restart things
+    void onLocationChanged( ) {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+    }
+
     //We took the code from Refresh button and created a method so we can use it in onStart method as well
     private void updateWeather(){
-        //Retrieve location stored in SharedPreferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default)); //The 2nd value is default value, if new value is not found
-
         //Create AsyncTask for fetching weather info
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), mForecastAdapter);
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
+        String location = Utility.getPreferredLocation(getActivity()); //Retrieve saved location from SharedPreferences
         fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
 
     }
@@ -199,9 +182,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         // Sort order:  Ascending, by date.
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, String.valueOf(System.currentTimeMillis()));
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
 
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(
+                getActivity(),
                 weatherForLocationUri,
                 FORECAST_COLUMNS,
                 null,
@@ -211,12 +195,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        //mForecastAdapter.swapCursor(cursor);
+        mForecastAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        //mForecastAdapter.swapCursor(null);
+        mForecastAdapter.swapCursor(null);
     }
 }
 

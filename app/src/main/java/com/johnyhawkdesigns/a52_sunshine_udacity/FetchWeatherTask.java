@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
 
@@ -36,61 +35,19 @@ import java.util.Vector;
 //=================================================Background Thread to GET data from OpenWeather.org================================================//
 //===================================================================================================================================================//
 
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params = string, progress = void, result = void
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = string, progress = void, result = void, Now result is void, so there would be no onPostExecute
 {
     private final String TAG = FetchWeatherTask.class.getSimpleName();
 
-    private ArrayAdapter<String> mForecastAdapter;
     private final Context mContext;
     private String city; //I made this global variable to extract passed city info from params[0]
 
     //Constructor
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
+    public FetchWeatherTask(Context context) {
         mContext = context;
-        mForecastAdapter = forecastAdapter;
     }
 
     private boolean DEBUG = true;
-
-
-    /* The date/time conversion code is going to be moved outside the asynctask later,
-     * so for convenience we're breaking it out into its own method now.
-     */
-    private String getReadableDateString(long time) {
-        // Because the API returns a unix timestamp (measured in seconds),
-        // it must be converted to milliseconds in order to be converted to valid date.
-        Date date = new Date(time);
-        SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
-        return format.format(date).toString();
-    }
-
-    /**
-     * Prepare the weather high/lows for presentation. Also see if it's unit is Fahrenheit, convert it mathematically to Fahrenheit from Metric
-     */
-    private String formatHighLows(double high, double low) {
-        // Data is fetched in Celsius by default. If user prefers to see in Fahrenheit, convert the values here.
-        // We do this rather than fetching in Fahrenheit so that the user can change this option without us having to re-fetch the data once we start storing the values in a database.
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String unitType = sharedPreferences.getString(mContext.getString(R.string.pref_units_key), mContext.getString(R.string.pref_units_metric));
-
-        //If passed unit is of type Imperial, then convert it mathematically to Fahrenheit
-        if (unitType.equals(mContext.getString(R.string.pref_units_imperial))) {
-            high = (high * 1.8) + 32;
-            low = (low * 1.8) + 32;
-        }
-        //If unit type is not Metric and we have already checked for Imperial, then it's an exception that should never happen
-        else if (!unitType.equals(mContext.getString(R.string.pref_units_metric))) {
-            Log.d(TAG, "Unit type not found: " + unitType);
-        }
-
-        // For presentation, assume the user doesn't care about tenths of a degree.
-        long roundedHigh = Math.round(high);
-        long roundedLow = Math.round(low);
-
-        String highLowStr = roundedHigh + "/" + roundedLow;
-        return highLowStr;
-    }
-
 
     /**
      * Helper method to handle insertion of a new location in the weather database.
@@ -140,33 +97,12 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
         return locationId;
     }
 
-    /*
-        Students: This code will allow the FetchWeatherTask to continue to return the strings that
-        the UX expects so that we can continue to test the application even once we begin using
-        the database.
-     */
-    String[] convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
-        // return strings to keep UI functional for now
-        String[] resultStrs = new String[cvv.size()];
-        for (int i = 0; i < cvv.size(); i++) {
-            ContentValues weatherValues = cvv.elementAt(i);
-            String highAndLow = formatHighLows(
-                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP),
-                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP));
-            resultStrs[i] = getReadableDateString(
-                    weatherValues.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE)) +
-                    " - " + weatherValues.getAsString(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC) +
-                    " - " + highAndLow;
-        }
-        return resultStrs;
-    }
-
 
     /**
      * Take the String representing the complete forecast in JSON Format and pull out the data we need to construct the Strings needed for the wireframes.
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it into an Object hierarchy for us.
      */
-    private String[] getWeatherDataFromJson(String forecastJsonStr,
+    private void getWeatherDataFromJson(String forecastJsonStr,
                                             String locationSetting)
             throws JSONException {
 
@@ -279,12 +215,19 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
                 cVVector.add(weatherValues);
             }
 
+            int inserted = 0;
+
             // add to database
             if (cVVector.size() > 0) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                inserted = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
+
+            Log.d(TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+
+/*
+            //This is not used for now, because below code doesn't exist in FetchWeatherTask
 
             // Sort order:  Ascending, by date.
             String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
@@ -305,18 +248,82 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
             Log.d(TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
 
             String[] resultStrs = convertContentValuesToUXFormat(cVVector);
-            return resultStrs;
+*/
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-        return null;
     }
 
 
+
+    /* The date/time conversion code is going to be moved outside the asynctask later,
+     * so for convenience we're breaking it out into its own method now.
+     */
+    private String getReadableDateString(long time) {
+        // Because the API returns a unix timestamp (measured in seconds),
+        // it must be converted to milliseconds in order to be converted to valid date.
+        Date date = new Date(time);
+        SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
+        return format.format(date).toString();
+    }
+
+    /**
+     * Prepare the weather high/lows for presentation. Also see if it's unit is Fahrenheit, convert it mathematically to Fahrenheit from Metric
+     */
+    private String formatHighLows(double high, double low) {
+        // Data is fetched in Celsius by default. If user prefers to see in Fahrenheit, convert the values here.
+        // We do this rather than fetching in Fahrenheit so that the user can change this option without us having to re-fetch the data once we start storing the values in a database.
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String unitType = sharedPreferences.getString(mContext.getString(R.string.pref_units_key), mContext.getString(R.string.pref_units_metric));
+
+        //If passed unit is of type Imperial, then convert it mathematically to Fahrenheit
+        if (unitType.equals(mContext.getString(R.string.pref_units_imperial))) {
+            high = (high * 1.8) + 32;
+            low = (low * 1.8) + 32;
+        }
+        //If unit type is not Metric and we have already checked for Imperial, then it's an exception that should never happen
+        else if (!unitType.equals(mContext.getString(R.string.pref_units_metric))) {
+            Log.d(TAG, "Unit type not found: " + unitType);
+        }
+
+        // For presentation, assume the user doesn't care about tenths of a degree.
+        long roundedHigh = Math.round(high);
+        long roundedLow = Math.round(low);
+
+        String highLowStr = roundedHigh + "/" + roundedLow;
+        return highLowStr;
+    }
+
+
+
+    /*
+        Students: This code will allow the FetchWeatherTask to continue to return the strings that
+        the UX expects so that we can continue to test the application even once we begin using
+        the database.
+     */
+    String[] convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
+        // return strings to keep UI functional for now
+        String[] resultStrs = new String[cvv.size()];
+        for (int i = 0; i < cvv.size(); i++) {
+            ContentValues weatherValues = cvv.elementAt(i);
+            String highAndLow = formatHighLows(
+                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP),
+                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP));
+            resultStrs[i] = getReadableDateString(
+                    weatherValues.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE)) +
+                    " - " + weatherValues.getAsString(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC) +
+                    " - " + highAndLow;
+        }
+        return resultStrs;
+    }
+
+
+
+
     @Override
-    protected String[] doInBackground(String... params) { //Void means this method returns nothing, so no need to use postExecute() method
+    protected Void doInBackground(String... params) { //Void means this method returns nothing, so no need to use postExecute() method
 
         //=======================================================Read Data from OpenWeather.org using API====================================================//
 
@@ -419,7 +426,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
 
         //----Parse this forecastJsonStr string data to Json and get String[]
         try {
-            return getWeatherDataFromJson(forecastJsonStr, city); // I used city instead of locationQuery. both are the same things.
+            getWeatherDataFromJson(forecastJsonStr, city); // I used city instead of locationQuery. both are the same things.
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -430,6 +437,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
     }
 
 
+/*
+    //After
     @Override
     protected void onPostExecute(String[] result) {
 
@@ -443,8 +452,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> //params
             // New data is back from the server.  Hooray!
             mForecastAdapter.notifyDataSetChanged();
         }
+    }*/
 
-    }
+
 }
 
 

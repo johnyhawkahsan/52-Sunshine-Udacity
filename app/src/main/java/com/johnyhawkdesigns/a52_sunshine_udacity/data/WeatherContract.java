@@ -116,7 +116,8 @@ public class WeatherContract {
         public static final String COLUMN_LOC_KEY = "location_id";
 
         // Date, stored as Text with format yyyy-MMM-dd
-        public static final String COLUMN_DATETEXT = "date"; //We're using Date text for now, I think later it will be changed
+        //public static final String COLUMN_DATETEXT = "date"; //We're using Date text for now, I think later it will be changed
+
         // Date, stored as long in milliseconds since the epoch
         public static final String COLUMN_DATE = "date";
 
@@ -155,13 +156,13 @@ public class WeatherContract {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
 
-        public static Uri buildWeatherLocationWithStartDate(String locationSetting, String startDate){
-            //long normalizedDate = normalizeDate(startDate);
-            return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATETEXT, startDate).build();
+        public static Uri buildWeatherLocationWithStartDate(String locationSetting, long startDate){
+            long normalizedDate = normalizeDate(startDate);
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
-        public static Uri buildWeatherLocationWithDate(String locationSetting, String date ){
-            return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(date).build();
+        public static Uri buildWeatherLocationWithDate(String locationSetting, long date ){
+            return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build();
         }
 
         public static String getLocationSettingFromUri(Uri uri){
