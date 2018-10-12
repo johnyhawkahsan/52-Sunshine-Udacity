@@ -121,15 +121,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
-                String forecast = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(), "Position = " + position + ", parent.getItemAtPosition = " + forecast, Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Position = " + position + ", parent.getItemAtPosition = " + parent.getItemAtPosition(position));
-
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null if it cannot seek to that position.
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
+                    Log.d(TAG, "Position = " + position + ", locationSetting = " + locationSetting + " , cursor.getLong(COL_WEATHER_DATE) = " + cursor.getLong(COL_WEATHER_DATE)); //Nothing in COL_WEATHER_DATE? Need to check why is it returning 0
                     //===============Launch Detail Activity Using Intent ====================//
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
