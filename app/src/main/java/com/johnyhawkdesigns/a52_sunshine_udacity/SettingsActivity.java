@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
     //===================================Fragment to load Preferences from===========================================//
     //NOTE: I tried to add below methods in onCreate to avoid using Fragment and use Activity only, but it gave error that this is depreciated.
-    public static class MainPreferenceFragment extends PreferenceFragment {
+    public static class MainPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -36,10 +36,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
 
         }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            return false;
+        }
     }
 
 
-    //Method to bind Preferences to value stored in our SharedPreferences using key value pair i.e; "location" key to retrieve value
+    // Method to bind Preferences to value stored in our SharedPreferences using key value pair i.e; "location" key to retrieve value
+    // Attaches a listener so the summary is always updated with the preference value. Also fires the listener once, to initialize the summary (so it shows up before the value is changed.
     private static void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
@@ -60,6 +66,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             String stringValue = newValue.toString();
             Log.d(TAG, "onPreferenceChange: newValue = " + stringValue);
+
+            //We want to fetch weather task again if unit is changed from metric to imperial
 
             //If this preference is a list Preference, we need to retrieve correct data according to index values because they were stored using array
             if (preference instanceof ListPreference) {
@@ -91,4 +99,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

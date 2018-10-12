@@ -85,8 +85,7 @@ public class Utility {
     }
 
     /**
-     * Given a day, returns just the name to use for that day.
-     * E.g "today", "tomorrow", "wednesday".
+     * Given a day, returns just the name to use for that day. E.g "today", "tomorrow", "wednesday".
      *
      * @param context Context to use for resource localization
      * @param dateInMillis The date in milliseconds

@@ -81,10 +81,6 @@ public class TestProvider {
 
 
 
-
-
-
-
     // This test uses the database directly to insert and then uses the ContentProvider to read out the data.
     // Uncomment this test to see if the basic weather query functionality given in the ContentProvider is working correctly.
     //@Test
@@ -126,10 +122,6 @@ public class TestProvider {
             //Assert.fail("No Weather data returned!");
         }
     }
-
-
-
-
 
 
 
@@ -187,10 +179,6 @@ public class TestProvider {
         //After data is written to the database, now we need to test our delete functionality
         deleteAllRecordsFromProvider();
     }
-
-
-
-
 
 
 
@@ -298,8 +286,6 @@ public class TestProvider {
 
 
 
-
-
     // Make sure we can still delete after adding/updating stuff
     // Student: Uncomment this test after you have completed writing the insert functionality in your provider.
     // It relies on insertions with testInsertReadProvider, so insert and query functionality must also be complete before this test can be used.
@@ -401,13 +387,9 @@ public class TestProvider {
 
 
 
-
-
-
-
     // Student: Uncomment this test after you have completed writing the BulkInsert functionality in your provider.  Note that this test will work with the built-in (default) provider
     // implementation, which just inserts records one-at-a-time, so really do implement the BulkInsert ContentProvider function.
-    @Test
+    //@Test
     public void testBulkInsert() {
 
         // first, let's create a location value
@@ -472,6 +454,38 @@ public class TestProvider {
 
 
 
+
+    //Method to test normalize date function in WeatherContract.class
+    @Test
+    public void testNormalizeDateMethod(){
+        long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
+        long startDateTest = 20180928;
+        String TEST_DATETEXT = "1419033600L";  // December 20th, 2014
+        long TEST_DATE = 1591833600;
+        long normalizedDate = WeatherContract.normalizeDate(TEST_DATE);
+        System.out.println(TAG + " = testNormalizeDateMethod() should return 1555200000  =  " + normalizedDate);
+    }
+
+
+
+
+    //Method to test normalize date function of deprecated Udacity tutorial
+    @Test
+    public void testNormalizeDateUdacityMethod(){
+        long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
+        long startDateTest = 20180928;
+        String TEST_DATETEXT = "1419033600L";  // December 20th, 2014
+        long TEST_DATE = 1591833600;
+        long normalizedDate = WeatherContract.normalizeDate(TEST_DATE);
+        System.out.println(TAG + " = testNormalizeDateUdacityMethod() should return 1555200000 =  " + normalizedDate);
+    }
+
+
+
+
+
+
+//================================================================Helper Method = deleteAllRecordsFromDB() ====================================================================//
     // This helper function deletes all records from both database tables using the database functions only.
     public void deleteAllRecordsFromDB() {
         WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
@@ -486,7 +500,7 @@ public class TestProvider {
 
 
 
-
+//================================================================Helper Method = deleteAllRecordsFromProvider() ====================================================================//
     // This helper function deletes all records from both database tables using the ContentProvider. It also queries the ContentProvider to make sure that the database has been successfully
     // deleted, so it cannot be used until the Query and Delete functions have been written in the ContentProvider.
     public void deleteAllRecordsFromProvider(){

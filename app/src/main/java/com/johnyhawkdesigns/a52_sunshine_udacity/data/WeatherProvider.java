@@ -315,7 +315,7 @@ public class WeatherProvider extends ContentProvider{
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        //normalizeDate(value);
+                        normalizeDate(value);
                         long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
@@ -336,8 +336,8 @@ public class WeatherProvider extends ContentProvider{
         // normalize the date value
         if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {
             long dateValue = values.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
-            values.put(WeatherContract.WeatherEntry.COLUMN_DATE, WeatherContract.normalizeDateUdacity(dateValue));
-            System.out.println(TAG + " : normalizeDate() = WeatherContract.normalizeDate(dateValue) = " + WeatherContract.normalizeDate(dateValue));
+            values.put(WeatherContract.WeatherEntry.COLUMN_DATE, WeatherContract.normalizeDate(dateValue));
+            System.out.println(TAG + " : normalizeDate(" + values + ") = WeatherContract.normalizeDate(dateValue) = " + WeatherContract.normalizeDate(dateValue));
         }
     }
 }

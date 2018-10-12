@@ -9,6 +9,7 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
@@ -103,7 +104,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it into an Object hierarchy for us.
      */
     private void getWeatherDataFromJson(String forecastJsonStr,
-                                            String locationSetting)
+                                        String locationSetting)
             throws JSONException {
 
         // Now we have a String representing the complete forecast in JSON Format.Fortunately parsing is easy:  constructor takes the JSON string and converts it into an Object hierarchy for us.
@@ -147,7 +148,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
             double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
             double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
 
-            Log.d(TAG, cityName + ", with coord: " + cityLatitude + " " + cityLongitude);
+            Log.d(TAG, "cityName = " + cityName + ", with coord: " + cityLatitude + " " + cityLongitude);
 
             long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
 
@@ -157,7 +158,17 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
             // OWM returns daily forecasts based upon the local time of the city that is being asked for, which means that we need to know the GMT offset to translate this data properly.
             // Since this data is also sent in-order and the first day is always the current day, we're going to take advantage of that to get a nice normalized UTC date for all of our weather.
             // Using the Gregorian Calendar Class instead of Time Class to get current date
-            Calendar gc = new GregorianCalendar(); //Note: The object gc gets set to the current time at the time of its creation
+            // Calendar gc = new GregorianCalendar(); //Note: The object gc gets set to the current time at the time of its creation
+
+            Time dayTime = new Time();
+            dayTime.setToNow();
+
+            // we start at the day returned by local time. Otherwise this is a mess.
+            int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
+            Log.d(TAG, "julianStartDay = " + julianStartDay + ", dayTime.gmtoff = " + dayTime.gmtoff);
+
+            // now we work exclusively in UTC
+            dayTime = new Time();
 
             // Loop through JSON weather array data to extract appropriate String values
             for (int i = 0; i < weatherArray.length(); i++) {
@@ -178,11 +189,12 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
                 //Converting the integer value returned by Calendar.DAY_OF_WEEK to a human-readable String
-                dateTime = gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
+                //dateTime = gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
                 //iterating to the next day
-                gc.add(Calendar.DAY_OF_WEEK, 1); //to get an integer with correspond to the day of the week. For example: 7 corresponds to Saturday, 1 to Sunday, 2 to Monday and so on.
+                //gc.add(Calendar.DAY_OF_WEEK, 1); //to get an integer with correspond to the day of the week. For example: 7 corresponds to Saturday, 1 to Sunday, 2 to Monday and so on.
 
-                Log.d(TAG, "getWeatherDataFromJson: dateTime = " + dateTime);
+                dateTime = String.valueOf(dayTime.setJulianDay(julianStartDay + i));
+                Log.d(TAG, "getWeatherDataFromJson: dateTime = " + dateTime + ", dayTime = " + dayTime + ", julianStartDay = " + julianStartDay);
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
                 humidity = dayForecast.getInt(OWM_HUMIDITY);
@@ -359,6 +371,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
             final String APPID_PARAM = "APPID";
 
             city = params[0];
+
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERY_PARAM, locationQuery) //We have to manually add that

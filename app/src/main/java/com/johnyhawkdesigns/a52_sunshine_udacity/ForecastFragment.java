@@ -159,18 +159,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     //We took the code from Refresh button and created a method so we can use it in onStart method as well
-    private void updateWeather(){
+    public void updateWeather(){
         //Create AsyncTask for fetching weather info
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
         String location = Utility.getPreferredLocation(getActivity()); //Retrieve saved location from SharedPreferences
         fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateWeather();
+        updateWeather(); //If we comment this out, we need to press refresh button to update the data.
     }
 
 
