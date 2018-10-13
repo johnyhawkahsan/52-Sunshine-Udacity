@@ -310,6 +310,7 @@ public class WeatherProvider extends ContentProvider{
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         switch (match) {
+            // We are only using WEATHER case here because we only want to bulk insert 14 days weather data and there is no need to bulk insert location data because there would be only 1 location.
             case WEATHER:
                 db.beginTransaction();
                 int returnCount = 0;
@@ -332,6 +333,7 @@ public class WeatherProvider extends ContentProvider{
         }
     }
 
+    //This normalize date method extracts dateValue from all the data and use WeatherContract.normalizeDate() method to normalize those dates
     private void normalizeDate(ContentValues values) {
         // normalize the date value
         if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {

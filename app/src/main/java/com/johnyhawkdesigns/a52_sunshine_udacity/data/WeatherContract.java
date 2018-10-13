@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,8 +30,8 @@ public class WeatherContract {
 
 
 
-    //Note: I replaced the UDACITY method with this one: https://stackoverflow.com/questions/39788033/time-getjulianday-deprecated-which-code-would-get-the-work-done-instead?noredirect=1&lq=1
-    // To make it easy to query for the exact date, we normalize all dates that go into the database to the start of the the Julian day at UTC.
+    // Note: I replaced the UDACITY method with this one: https://stackoverflow.com/questions/39788033/time-getjulianday-deprecated-which-code-would-get-the-work-done-instead?noredirect=1&lq=1
+    // These 2 methods are testing using 2 different tests and the results returned were the same.
     public static long normalizeDate(long startDate){
         // normalize the start date to the beginning of the (UTC) day
         GregorianCalendar date = (GregorianCalendar) GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -70,7 +71,6 @@ public class WeatherContract {
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;   /** vnd.android.cursor.item/com.johnyhawkdesigns.a52_sunshine_udacity/location */
 
 
-
         public static final String TABLE_NAME = "location";
 
         // The location setting string is what will be sent to openweathermap as the location query.
@@ -89,6 +89,7 @@ public class WeatherContract {
          * @return Uri = ContentUris.withAppendedId(CONTENT_URI, id)
          */
         public static Uri buildLocationUri(long id){
+            Log.d(TAG, "buildLocationUri: return ContentUris.withAppendedId(CONTENT_URI, id) = " + ContentUris.withAppendedId(CONTENT_URI, id));
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
@@ -149,34 +150,42 @@ public class WeatherContract {
          * @return Uri = ContentUris.withAppendedId(CONTENT_URI, id)
          */
         public static Uri buildWeatherUri(long id){
+            Log.d(TAG, "buildWeatherUri: return ContentUris.withAppendedId(CONTENT_URI, id) = " + ContentUris.withAppendedId(CONTENT_URI, id));
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
         public static Uri buildWeatherLocation(String locationSetting){
+            Log.d(TAG, "buildWeatherLocation:return CONTENT_URI.buildUpon().appendPath(locationSetting).build() = " + CONTENT_URI.buildUpon().appendPath(locationSetting).build());
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
 
         public static Uri buildWeatherLocationWithStartDate(String locationSetting, long startDate){
             long normalizedDate = normalizeDate(startDate);
+            Log.d(TAG, "buildWeatherLocationWithStartDate: return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build() = " +  CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build());
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date ){
+            Log.d(TAG, "buildWeatherLocationWithStartDate: return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build() = " +  CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build());
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build();
         }
 
         public static String getLocationSettingFromUri(Uri uri){
+            Log.d(TAG, "getLocationSettingFromUri: return uri.getPathSegments().get(1) = " + uri.getPathSegments().get(1));
             return uri.getPathSegments().get(1);
         }
 
         public static long getDateFromUri(Uri uri){
-            return  Long.parseLong(uri.getPathSegments().get(2));
+            Log.d(TAG, "getDateFromUri: return Long.parseLong(uri.getPathSegments().get(2)) = " + Long.parseLong(uri.getPathSegments().get(2)));
+            return Long.parseLong(uri.getPathSegments().get(2));
         }
 
         public static long getStartDateFromUri(Uri uri){
             String dateString = uri.getQueryParameter(COLUMN_DATE);
-            if (null != dateString && dateString.length() >0 )
+            if (null != dateString && dateString.length() >0 ){
+                Log.d(TAG, "getStartDateFromUri: return Long.parseLong(dateString) = " + Long.parseLong(dateString) );
                 return Long.parseLong(dateString);
+            }
             else
                 return 0;
         }

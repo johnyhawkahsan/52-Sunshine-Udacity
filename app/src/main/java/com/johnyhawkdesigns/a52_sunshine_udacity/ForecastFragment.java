@@ -125,12 +125,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
-                    Log.d(TAG, "Position = " + position + ", locationSetting = " + locationSetting + " , cursor.getLong(COL_WEATHER_DATE) = " + cursor.getLong(COL_WEATHER_DATE)); //Nothing in COL_WEATHER_DATE? Need to check why is it returning 0
+                    long weatherDate = cursor.getLong(COL_WEATHER_DATE);
+                    Uri weatherLocationWithDateUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationSetting, weatherDate);
                     //===============Launch Detail Activity Using Intent ====================//
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
-                            ));
+                            .setData(weatherLocationWithDateUri); //Send this data in Intent Extra
+                    Log.d(TAG, "onItemClick: buildWeatherLocationWithDate(locationSetting = " + locationSetting + ", weatherDate = " + weatherDate + "), uri = " + weatherLocationWithDateUri );
                     startActivity(intent);
                 }
 
@@ -165,10 +165,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart: updateWeather()");
         updateWeather(); //If we comment this out, we need to press refresh button to update the data.
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onStart: onLocationChanged()");
+        onLocationChanged();
+    }
 
     @NonNull
     @Override

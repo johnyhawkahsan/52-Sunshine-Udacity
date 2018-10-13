@@ -2,6 +2,7 @@ package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -104,15 +105,17 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
         Intent intent = getActivity().getIntent();
         if (intent == null) {
-            Log.d(TAG, "In onCreateLoader, intent == null");
+            Log.d(TAG, "In onCreateLoader. nothing received, intent == null");
             return null;
         }
 
-        Log.d(TAG, "In onCreateLoader, intent.getData() = " + intent.getData());
+        Uri weatherLocationWithDateUri = intent.getData();
+        Log.d(TAG, "In onCreateLoader, received intent.getData() = " + weatherLocationWithDateUri);
+
         // Now create and return a CursorLoader that will take care of creating a Cursor for the data being displayed.
         return new CursorLoader(
                 getActivity(),
-                intent.getData(),
+                weatherLocationWithDateUri, //Uri in the form built with buildWeatherLocationWithDate() content://com.johnyhawkdesigns.a52_sunshine_udacity/weather/Peshawar/1539475200000
                 FORECAST_COLUMNS,
                 null,
                 null,
@@ -122,14 +125,14 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        Log.d(TAG, "In onLoadFinished");
+
         if (!cursor.moveToFirst()) {
             Log.d(TAG, "In onLoadFinished. No cursor data returned"); //This is because our uri looks like this with date = 0, content://com.johnyhawkdesigns.a52_sunshine_udacity/weather/Peshawar/0
             return;
         }
 
         String dateString = Utility.formatDate(cursor.getLong(COL_WEATHER_DATE));
-        Log.d(TAG, "In onLoadFinished - dateString = " + dateString);
+        Log.d(TAG, "In onLoadFinished - before formatting, cursor.getLong(COL_WEATHER_DATE)= " + cursor.getLong(COL_WEATHER_DATE) + ", after formatting, dateString = " + dateString);
 
         String weatherDescription = cursor.getString(COL_WEATHER_DESC);
 
@@ -140,6 +143,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         String low = Utility.formatTemperature(cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
         mForecastStr = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
+        Log.d(TAG, "In onLoadFinished - mForecastStr = " + mForecastStr);
 
         TextView detailTextView = getView().findViewById(R.id.detail_text);
         detailTextView.setText(mForecastStr);

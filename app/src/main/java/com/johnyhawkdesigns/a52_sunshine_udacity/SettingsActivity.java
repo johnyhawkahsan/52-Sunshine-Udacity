@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
     //===================================Fragment to load Preferences from===========================================//
     //NOTE: I tried to add below methods in onCreate to avoid using Fragment and use Activity only, but it gave error that this is depreciated.
-    public static class MainPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+    public static class MainPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -37,10 +37,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
         }
 
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            return false;
-        }
     }
 
 
@@ -69,7 +65,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
             //We want to fetch weather task again if unit is changed from metric to imperial
 
-            //If this preference is a list Preference, we need to retrieve correct data according to index values because they were stored using array
+            //If this preference is a list Preference, we need to retrieve correct data according to index values because they were stored using array (Unit is ListPreference)
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in the preference's 'entries' list (since they have separate labels/values).
                 ListPreference listPreference = (ListPreference) preference;
@@ -77,14 +73,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
                 Log.d(TAG, "onPreferenceChange: index of List Item = " + index);
 
                 // Set the summary to reflect the new value.
-                //preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null); //Method by AndroidHive
+                // preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null); //Method by AndroidHive
                 if (index >= 0) {
                     preference.setSummary(listPreference.getEntries()[index]);
                 }
 
             }
             else {
-                //Our data falls within this category because it's an EditTextPreference
+                //Our data falls within this category because it's an EditTextPreference (Location is EditTextPreference)
                 Log.d(TAG, "onPreferenceChange: else = value of our EditText SharedPreferences");
                 preference.setSummary(stringValue);
             }

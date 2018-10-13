@@ -229,7 +229,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> //params = s
 
             int inserted = 0;
 
-            // add to database
+            // bulk insert retrieved data to our database
             if (cVVector.size() > 0) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray); //Convert cVVector to an array for bulk insert to work
