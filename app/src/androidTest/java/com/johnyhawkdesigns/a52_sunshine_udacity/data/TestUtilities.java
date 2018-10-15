@@ -31,7 +31,7 @@ public class TestUtilities {
 
     private static final String TAG = TestUtilities.class.getSimpleName();
     static final String TEST_LOCATION = "99705";
-    static final long TEST_DATE = 1419033600L;  // December 20th, 2014
+    static final long TEST_DATE = 1419033600;  // December 20th, 2014
     static final String TEST_DATETEXT = "1419033600L";  // December 20th, 2014
 
 

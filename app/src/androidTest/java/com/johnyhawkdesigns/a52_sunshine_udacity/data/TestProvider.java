@@ -125,6 +125,7 @@ public class TestProvider {
 
 
 
+    // In this test, we first add Location data and query it. Then we add weather data and query it as well.
    //@Test
     public void testInsertContentUri() {
 
@@ -249,54 +250,21 @@ public class TestProvider {
     }
 
 
-    // This test doesn't touch the database.  It verifies that the ContentProvider returns the correct type for each type of URI that it can handle.
-    // Students: Uncomment this test to verify that your implementation of GetType is functioning correctly.
-    //@Test
-    public void testGetType(){
-        // content://com.example.android.sunshine.app/weather/
-        String type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.CONTENT_URI);
-        // vnd.android.cursor.dir/com.johnyhawkdesigns.a52_sunshine_udacity/weather
-        Assert.assertEquals("Error: the WeatherEntry CONTENT_URI should return WeatherEntry.CONTENT_TYPE", WeatherContract.WeatherEntry.CONTENT_TYPE, type);
-        System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.CONTENT_TYPE = " + WeatherContract.WeatherEntry.CONTENT_TYPE);
-
-        String testLocation = "94074";
-        // content://com.example.android.sunshine.app/weather/94074
-        type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.buildWeatherLocation(testLocation));
-        // vnd.android.cursor.dir/com.example.android.sunshine.app/weather
-        Assert.assertEquals("Error: the WeatherEntry CONTENT_URI with location should return WeatherEntry.CONTENT_TYPE", WeatherContract.WeatherEntry.CONTENT_TYPE, type);
-        System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.buildWeatherLocation(testLocation) = " + WeatherContract.WeatherEntry.CONTENT_TYPE);
-
-
-        Long testDate = 1419120000L; // December 21st, 2014
-        // content://com.example.android.sunshine.app/weather/94074/20140612
-        type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(testLocation, testDate));
-        // vnd.android.cursor.item/com.example.android.sunshine.app/weather/1419120000
-        Assert.assertEquals("Error: the WeatherEntry CONTENT_URI with location and date should return WeatherEntry.CONTENT_ITEM_TYPE", WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE, type);
-        System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE = " + WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE);
-
-
-        // content://com.example.android.sunshine.app/location/
-        type = mContext.getContentResolver().getType(WeatherContract.LocationEntry.CONTENT_URI);
-        // vnd.android.cursor.dir/com.example.android.sunshine.app/location
-        Assert.assertEquals("Error: the LocationEntry CONTENT_URI should return LocationEntry.CONTENT_TYPE", WeatherContract.LocationEntry.CONTENT_TYPE, type);
-        System.out.println(TAG + " : type = " + type + ", WeatherContract.WeatherEntry.CONTENT_TYPE = " + WeatherContract.WeatherEntry.CONTENT_TYPE);
-
-    }
 
 
 
 
-    // Make sure we can still delete after adding/updating stuff
+    // Ahsan: This is the biggest TEST. It first inserts location and weather, and then implements our query parameters to test if WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE etc are working properly.
     // Student: Uncomment this test after you have completed writing the insert functionality in your provider.
     // It relies on insertions with testInsertReadProvider, so insert and query functionality must also be complete before this test can be used.
-    //@Test
+    @Test
     public void testInsertReadProvider() {
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
 
         // Register a content observer for our insert.  This time, directly with the content resolver
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
         mContext.getContentResolver().registerContentObserver(WeatherContract.LocationEntry.CONTENT_URI, true, tco);
-        Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, testValues);
+        Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, testValues); // insert location location data and get locationUri
         System.out.println(TAG + " :testInsertReadProvider(): locationUri = " + locationUri);
 
         // Did our content observer get called?  Students:  If this fails, your insert location isn't calling getContext().getContentResolver().notifyChange(uri, null);
@@ -321,13 +289,12 @@ public class TestProvider {
         TestUtilities.validateCursor("testInsertReadProvider. Error validating LocationEntry.", cursor, testValues);
 
         // Fantastic.  Now that we have a location, add some weather!
-        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
-        // The TestContentObserver is a one-shot class
-        tco = TestUtilities.getTestContentObserver();
+        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId); // Weather values need at least 1 location id to be present.
+        tco = TestUtilities.getTestContentObserver(); // The TestContentObserver is a one-shot class
 
         mContext.getContentResolver().registerContentObserver(WeatherContract.WeatherEntry.CONTENT_URI, true, tco);
 
-        Uri weatherInsertUri = mContext.getContentResolver().insert(WeatherContract.WeatherEntry.CONTENT_URI, weatherValues);
+        Uri weatherInsertUri = mContext.getContentResolver().insert(WeatherContract.WeatherEntry.CONTENT_URI, weatherValues); // Insert Weather data through content resolver
         Assert.assertTrue(weatherInsertUri != null);
 
         // Did our content observer get called?  Students:  If this fails, your insert weather  in your ContentProvider isn't calling
@@ -349,9 +316,10 @@ public class TestProvider {
         // Add the location values in with the weather data so that we can make sure that the join worked and we actually get all the values back
         weatherValues.putAll(testValues);
 
+        Uri uriBuildWeatherLocation = WeatherContract.WeatherEntry.buildWeatherLocation(TestUtilities.TEST_LOCATION);
         // Get the joined Weather and Location data
         weatherCursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocation(TestUtilities.TEST_LOCATION),
+                uriBuildWeatherLocation,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
@@ -359,9 +327,10 @@ public class TestProvider {
         );
         TestUtilities.validateCursor("testInsertReadProvider.  Error validating joined Weather and Location Data.", weatherCursor, weatherValues);
 
+        Uri uriBuildWeatherLocationWithStartDate = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE);
         // Get the joined Weather and Location data with a start date
         weatherCursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE),
+                uriBuildWeatherLocationWithStartDate,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
@@ -369,9 +338,11 @@ public class TestProvider {
         );
         TestUtilities.validateCursor("testInsertReadProvider.  Error validating joined Weather and Location Data with start date.", weatherCursor, weatherValues);
 
+
+        Uri uriBuildWeatherLocationWithDate = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE);
         // Get the joined Weather data for a specific date
         weatherCursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocationWithDate(TestUtilities.TEST_LOCATION, TestUtilities.TEST_DATE),
+                uriBuildWeatherLocationWithDate,
                 null,
                 null,
                 null,
@@ -379,8 +350,6 @@ public class TestProvider {
         );
         TestUtilities.validateCursor("testInsertReadProvider.  Error validating joined Weather and Location data for a specific date.", weatherCursor, weatherValues);
     }
-
-
 
 
 
@@ -456,7 +425,7 @@ public class TestProvider {
 
 
     //Method to test normalize date function in WeatherContract.class
-    @Test
+    //@Test
     public void testNormalizeDateMethod(){
         long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
         long startDateTest = 20180928;
@@ -470,7 +439,7 @@ public class TestProvider {
 
 
     //Method to test normalize date function of deprecated Udacity tutorial
-    @Test
+    //@Test
     public void testNormalizeDateUdacityMethod(){
         long julianDate = 2013322;      //The Julian date for Nov 18 2013 = May be this is the correct date format???
         long startDateTest = 20180928;

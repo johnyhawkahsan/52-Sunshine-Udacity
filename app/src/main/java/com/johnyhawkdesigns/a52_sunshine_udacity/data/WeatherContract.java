@@ -117,7 +117,7 @@ public class WeatherContract {
         public static final String COLUMN_LOC_KEY = "location_id";
 
         // Date, stored as Text with format yyyy-MMM-dd
-        //public static final String COLUMN_DATETEXT = "date"; //We're using Date text for now, I think later it will be changed
+        //public static final String COLUMN_DATETEXT = "date"; //I replaced this date text with date column. Both are the same but we would use Long values instead of text
 
         // Date, stored as long in milliseconds since the epoch
         public static final String COLUMN_DATE = "date";
@@ -165,6 +165,7 @@ public class WeatherContract {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
+        // This method builds weatherLocation with appended date. We have used this method on onClick when user click weather item, we use this method to build uri and pass to DetailActivityFragment
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date ){
             Log.d(TAG, "buildWeatherLocationWithStartDate: return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build() = " +  CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build());
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build();
@@ -175,13 +176,15 @@ public class WeatherContract {
             return uri.getPathSegments().get(1);
         }
 
+        // Extract date portion from the Uri
         public static long getDateFromUri(Uri uri){
             Log.d(TAG, "getDateFromUri: return Long.parseLong(uri.getPathSegments().get(2)) = " + Long.parseLong(uri.getPathSegments().get(2)));
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+
         public static long getStartDateFromUri(Uri uri){
-            String dateString = uri.getQueryParameter(COLUMN_DATE);
+            String dateString = uri.getQueryParameter(COLUMN_DATE); // Please check above buildWeatherLocationWithStartDate() where date is appended as
             if (null != dateString && dateString.length() >0 ){
                 Log.d(TAG, "getStartDateFromUri: return Long.parseLong(dateString) = " + Long.parseLong(dateString) );
                 return Long.parseLong(dateString);
@@ -192,20 +195,5 @@ public class WeatherContract {
 
     }
 
-
-    public static final String DATE_FORMAT = "yyyyMMdd";
-
-
-    /**
-     * Converts Date class to a string representation, used for easy comparison and database lookup.
-     * @param date The input date
-     * @return a DB-friendly representation of the date, using the format defined in DATE_FORMAT.
-     */
-    public static String getDbDateString(Date date){
-        // Because the API returns a unix timestamp (measured in seconds),
-        // it must be converted to milliseconds in order to be converted to valid date.
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        return sdf.format(date);
-    }
 
 }

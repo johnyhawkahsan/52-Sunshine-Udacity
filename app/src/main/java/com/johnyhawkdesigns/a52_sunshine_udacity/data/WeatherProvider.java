@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class WeatherProvider extends ContentProvider{
 
@@ -48,7 +49,7 @@ public class WeatherProvider extends ContentProvider{
     //location.location_setting = ? AND date >= ?
     private static final String sLocationSettingWithStartDateSelection = WeatherContract.LocationEntry.TABLE_NAME +
             "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
-            WeatherContract.WeatherEntry.COLUMN_DATE + " >=? ";
+            WeatherContract.WeatherEntry.COLUMN_DATE + " >= ? "; // replacing >= with > to test previous day error. Strangely the error did not occur once I tested and reverted back to >=.
 
     //location.location_setting = ? AND date = ?
     private static final String sLocationSettingAndDaySelection =
@@ -59,17 +60,17 @@ public class WeatherProvider extends ContentProvider{
 
 
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
-        long startDate = WeatherContract.WeatherEntry.getStartDateFromUri(uri);
+        String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri); // Extract location from uri
+        long startDate = WeatherContract.WeatherEntry.getStartDateFromUri(uri);               // Extract startDate from uri
 
         String[] selectionArgs;
         String selection;
 
 
-        if (startDate == 0) {
+        if (startDate == 0) { // If date is not available, then only use location.location_setting = peshawar
             selection = sLocationSettingSelection;
             selectionArgs = new String[]{locationSetting};
-        } else {
+        } else { // if date is available, location.location_setting = Peshawar AND date = 1231312312
             selection = sLocationSettingWithStartDateSelection;
             selectionArgs = new String[]{locationSetting, Long.toString(startDate)};
         }
@@ -114,10 +115,10 @@ public class WeatherProvider extends ContentProvider{
         //For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
         matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);              // We use /* for matching strings
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);   // Here * location is a string but # date is a long integer
 
         matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
-        matcher.addURI(authority, WeatherContract.PATH_LOCATION + "/#", LOCATION_ID);                       // We use /# for matching integers
+        matcher.addURI(authority, WeatherContract.PATH_LOCATION + "/#", LOCATION_ID);                       // We use /# for matching integers because ID is always a long integer
 
         return matcher;
     }
@@ -132,8 +133,8 @@ public class WeatherProvider extends ContentProvider{
     }
 
     /*
-        Students: Here's where you'll code the getType function that uses the UriMatcher.  You can
-        test this by uncommenting testGetType in TestProvider.
+        Students: Here's where you'll code the getType function that uses the UriMatcher.  You can test this by uncommenting testGetType in TestProvider.
+        NOTE: This getType method identifies our provided uri for example as a query parameter. getcontentresolver().query (uri), so this uri could be any of the 5 types. getType identifies the type.
     */
     @Nullable
     @Override
@@ -158,6 +159,7 @@ public class WeatherProvider extends ContentProvider{
     }
 
 
+    // Note: When we call query method, we simply provide a uri regardless of what the query is actually doing. Now real identification happens in switch statement.
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
@@ -166,16 +168,19 @@ public class WeatherProvider extends ContentProvider{
         switch (sUriMatcher.match(uri)){
             case WEATHER_WITH_LOCATION_AND_DATE:
             {
+                Log.d(TAG, "query: WEATHER_WITH_LOCATION_AND_DATE");
                 retCursor = getWeatherByLocationSettingAndDate(uri, projection, sortOrder);
                 break;
             }
             case WEATHER_WITH_LOCATION:
             {
+                Log.d(TAG, "query: WEATHER_WITH_LOCATION");
                 retCursor = getWeatherByLocationSetting(uri, projection, sortOrder);
                 break;
             }
             case WEATHER:
             {
+                Log.d(TAG, "query: WEATHER");
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         projection,
@@ -189,6 +194,7 @@ public class WeatherProvider extends ContentProvider{
             }
             case LOCATION_ID:
             {
+                Log.d(TAG, "query: LOCATION_ID");
                 long id = ContentUris.parseId(uri);
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         WeatherContract.LocationEntry.TABLE_NAME,
@@ -203,6 +209,7 @@ public class WeatherProvider extends ContentProvider{
             }
             case LOCATION:
             {
+                Log.d(TAG, "query: LOCATION");
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         WeatherContract.LocationEntry.TABLE_NAME,
                         projection,
@@ -217,7 +224,8 @@ public class WeatherProvider extends ContentProvider{
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri); // this causes a cursor to register a content observer to watch for changes that happen to that uri and any of it's descendants
         return retCursor;
     }
 
