@@ -43,7 +43,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     //private ArrayAdapter<String> mForecastAdapter; // Now we don't need this ArrayAdapter<String>. Instead, we use our newly created
     private ForecastAdapter mForecastAdapter;
 
-    private String mLocation;
+    private ListView mListView;
+    private int mPosition = ListView.INVALID_POSITION;
+    private boolean mUseTodayLayout;
+
+    private static final String SELECTED_KEY = "selected_position";
+
     private static final int FORECAST_LOADER = 0;
 
     // For the forecast view we're showing only a small subset of the stored data. Specify the columns we need.
@@ -72,6 +77,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_WEATHER_CONDITION_ID = 6;
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
+
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
+
 
     //Constructor
     public ForecastFragment() {
@@ -112,17 +131,18 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // The ArrayAdapter will take data from a source (like our dummy forecast) and use it to populate the ListView it's attached to.
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
-        ListView listView = view.findViewById(R.id.listview_forecast);//Find our list view by id
-        listView.setAdapter(mForecastAdapter); // Set adapter for listView
+        mListView = view.findViewById(R.id.listview_forecast);//Find our list view by id
+        mListView.setAdapter(mForecastAdapter); // Set adapter for listView
 
         //============Set onItemClickListener for items that are being clicked
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null if it cannot seek to that position.
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+ /*
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
                     long weatherDate = cursor.getLong(COL_WEATHER_DATE);
@@ -133,9 +153,32 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     Log.d(TAG, "onItemClick: buildWeatherLocationWithDate(locationSetting = " + locationSetting + ", weatherDate = " + weatherDate + "), uri = " + weatherLocationWithDateUri );
                     startActivity(intent);
                 }
+*/
+
+                if (cursor != null) {
+                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                            ));
+                }
+                mPosition = position;
 
             }
         });
+
+        // If there's instance state, mine it for useful information.
+        // The end-goal here is that the user never knows that turning their device sideways
+        // does crazy lifecycle related things.  It should feel like some stuff stretched out,
+        // or magically appeared to take advantage of room, but data or place in the app was never
+        // actually *lost*.
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            // The listview probably hasn't even been populated yet.  Actually perform the
+            // swapout in onLoadFinished.
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
+
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
         return view;
     }
@@ -203,6 +246,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mForecastAdapter.swapCursor(null);
     }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mForecastAdapter != null) {
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
+
+
 }
 
 

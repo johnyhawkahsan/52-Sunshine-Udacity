@@ -19,6 +19,10 @@ public class MainActivity extends AppCompatActivity {
     public static String APIKey = "2a3d28af75a740af1e2614c2a02d26b2"; //My openweathermap api key
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPane;
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +33,27 @@ public class MainActivity extends AppCompatActivity {
         setTitle("MainActivity");
 
 
-        //Add fragment to our MainActivity
-        if (savedInstanceState == null){
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_activity_main, new ForecastFragment()) //container_activity_main is the id of activity_main.xml's main FrameLayout.
-                    .commit();
+        if (findViewById(R.id.weather_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+            getSupportActionBar().setElevation(0f);
         }
 
+        ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_forecast));
+        forecastFragment.setUseTodayLayout(!mTwoPane);
     }
 
     @Override
