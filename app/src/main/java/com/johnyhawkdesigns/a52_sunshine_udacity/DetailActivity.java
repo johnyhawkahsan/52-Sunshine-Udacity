@@ -17,25 +17,21 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle("DetailActivity");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
-        //Add fragment to our Activity
+        //Add fragment to our Activity - Create the detail fragment and add it to the activity using a fragment transaction.
         if (savedInstanceState == null){
             Log.d(TAG, "onCreate: adding Fragment DetailFragment");
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+
+            DetailFragment detailFragment = new DetailFragment();
+            detailFragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_activity_detail, new DetailFragment()) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
+                    .add(R.id.container_activity_detail, detailFragment) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
                     .commit();
         }
-
-        Log.d(TAG, "onCreate:" );
-
-
 
     }
 

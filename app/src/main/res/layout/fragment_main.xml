@@ -3,10 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.johnyhawkdesigns.a52_sunshine_udacity.MainActivity">
+
     <ListView
         style="@style/ForecastListStyle"
         android:id="@+id/listview_forecast"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null" />
+
 </FrameLayout>

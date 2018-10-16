@@ -9,21 +9,12 @@
     tools:ignore="MergeRootFrame"
     android:id="@+id/container_activity_detail">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
+    <!--
+    Strange thing is, if below lines are added or removed, they have no effect.
+    Maybe, this is because we are creating DetailFragment within DetailActivity.
     <include layout="@layout/fragment_detail" />
+    -->
+
 
 
 </FrameLayout>

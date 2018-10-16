@@ -82,6 +82,31 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            weatherLocationWithDateUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
+            Log.d(TAG, "In onCreateLoader, received intent.getData() = " + weatherLocationWithDateUri);
+        }
+
+
+        mIconView = (ImageView) view.findViewById(R.id.detail_icon);
+        mDateView = (TextView) view.findViewById(R.id.detail_date_textview);
+        mFriendlyDateView = (TextView) view.findViewById(R.id.detail_day_textview);
+        mDescriptionView = (TextView) view.findViewById(R.id.detail_forecast_textview);
+        mHighTempView = (TextView) view.findViewById(R.id.detail_high_textview);
+        mLowTempView = (TextView) view.findViewById(R.id.detail_low_textview);
+        mHumidityView = (TextView) view.findViewById(R.id.detail_humidity_textview);
+        mWindView = (TextView) view.findViewById(R.id.detail_wind_textview);
+        mPressureView = (TextView) view.findViewById(R.id.detail_pressure_textview);
+
+
+        return view;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_detail_fragment, menu);
@@ -110,30 +135,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return shareIntent;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            weatherLocationWithDateUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
-            Log.d(TAG, "In onCreateLoader, received intent.getData() = " + weatherLocationWithDateUri);
-        }
-
-
-        mIconView = (ImageView) view.findViewById(R.id.detail_icon);
-        mDateView = (TextView) view.findViewById(R.id.detail_date_textview);
-        mFriendlyDateView = (TextView) view.findViewById(R.id.detail_day_textview);
-        mDescriptionView = (TextView) view.findViewById(R.id.detail_forecast_textview);
-        mHighTempView = (TextView) view.findViewById(R.id.detail_high_textview);
-        mLowTempView = (TextView) view.findViewById(R.id.detail_low_textview);
-        mHumidityView = (TextView) view.findViewById(R.id.detail_humidity_textview);
-        mWindView = (TextView) view.findViewById(R.id.detail_wind_textview);
-        mPressureView = (TextView) view.findViewById(R.id.detail_pressure_textview);
-
-
-        return view;
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
