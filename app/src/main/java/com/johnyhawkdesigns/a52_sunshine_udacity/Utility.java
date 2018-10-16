@@ -68,7 +68,8 @@ public class Utility {
         if (julianDay == currentJulianDay) {
             String today = context.getString(R.string.today);
             int formatId = R.string.format_full_friendly_date;
-            return today ; //" Need to fix this return statement inside Utility"
+            return String.format("%s - %s", today , getFormattedMonthDay(context, dateInMillis)) ; //" Need to fix this return statement inside Utility"
+            //TODO: Formatting should be done in this format mForecastStr = String.format("%s - %s - %s/%s", dateText, description, high, low);
             /*return String.format(context.getString(
                     formatId,
                     today,

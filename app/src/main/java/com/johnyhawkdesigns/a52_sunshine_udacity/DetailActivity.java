@@ -27,9 +27,9 @@ public class DetailActivity extends AppCompatActivity {
 
         //Add fragment to our Activity
         if (savedInstanceState == null){
-            Log.d(TAG, "onCreate: adding Fragment DetailActivityFragment");
+            Log.d(TAG, "onCreate: adding Fragment DetailFragment");
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_activity_detail, new DetailActivityFragment()) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
+                    .add(R.id.container_activity_detail, new DetailFragment()) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
                     .commit();
         }
 

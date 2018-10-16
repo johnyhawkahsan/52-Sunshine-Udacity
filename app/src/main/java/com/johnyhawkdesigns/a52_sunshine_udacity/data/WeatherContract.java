@@ -165,7 +165,7 @@ public class WeatherContract {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
-        // This method builds weatherLocation with appended date. We have used this method on onClick when user click weather item, we use this method to build uri and pass to DetailActivityFragment
+        // This method builds weatherLocation with appended date. We have used this method on onClick when user click weather item, we use this method to build uri and pass to DetailFragment
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date ){
             Log.d(TAG, "buildWeatherLocationWithStartDate: return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build() = " +  CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build());
             return CONTENT_URI.buildUpon().appendPath(locationSetting).appendPath(Long.toString(date)).build();

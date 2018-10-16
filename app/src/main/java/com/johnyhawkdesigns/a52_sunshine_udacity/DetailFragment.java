@@ -27,9 +27,9 @@ import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = DetailActivityFragment.class.getCanonicalName();
+    private static final String TAG = DetailFragment.class.getCanonicalName();
     static final String DETAIL_URI = "URI";
 
     private static final String FORECAST_SHARE_HASHTAG = "#SunshineApp";
@@ -77,7 +77,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mPressureView;
 
     //Constructor
-    public DetailActivityFragment() {
+    public DetailFragment() {
         setHasOptionsMenu(true); //I think we could also add this to onCreate Method
     }
 
@@ -116,7 +116,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            weatherLocationWithDateUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
+            weatherLocationWithDateUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
             Log.d(TAG, "In onCreateLoader, received intent.getData() = " + weatherLocationWithDateUri);
         }
 
@@ -157,22 +157,24 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        Intent intent = getActivity().getIntent();
-        if (intent == null) {
+
+        if ( null != weatherLocationWithDateUri ) {
+            // Now create and return a CursorLoader that will take care of creating a Cursor for the data being displayed.
+            return new CursorLoader(
+                    getActivity(),
+                    weatherLocationWithDateUri,
+                    DETAIL_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+        else {
             Log.d(TAG, "In onCreateLoader. nothing received, intent == null");
             return null;
         }
 
 
-        // Now create and return a CursorLoader that will take care of creating a Cursor for the data being displayed.
-        return new CursorLoader(
-                getActivity(),
-                weatherLocationWithDateUri, //Uri in the form built with buildWeatherLocationWithDate() content://com.johnyhawkdesigns.a52_sunshine_udacity/weather/Peshawar/1539475200000
-                DETAIL_COLUMNS,
-                null,
-                null,
-                null
-        );
     }
 
     @Override
