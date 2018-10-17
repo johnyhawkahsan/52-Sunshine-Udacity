@@ -28,11 +28,15 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle("Sunshine App");
+        //NOTE: Ahsan: if it is an ordinary phone, we have activity_main with fragment_forecast . If it is a tablet, we have activity_main(sw600dp) with fragment_forecast + FrameLayout (weather_detail_container) to dynamically add second detail fragment
 
         mLocation = Utility.getPreferredLocation(this);
 
 /*
-        // This is our old method that we used to create new fragment
+        // This is our old method that we used to create new fragment to our FrameLayout in our activity_main.xml Now we have specifically added fragment_forecast
         //Add fragment to our MainActivity
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         }
 */
 
-
+        // If this is a tablet
         if (findViewById(R.id.weather_detail_container) != null) {
             Log.d(TAG, "onCreate: This is a tablet and device resolution is more than 600dp");
             // The detail container view will be present only in the large-screen layouts (res/layout-sw600dp).
@@ -53,14 +57,15 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                         .replace(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
                         .commit();
             }
-        } else {
+        }
+        // If this is a phone
+        else {
             Log.d(TAG, "onCreate: This is a phone and device resolution is less than 600dp");
             mTwoPane = false;
             //getSupportActionBar().setElevation(0f);
         }
 
-        ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_forecast));
+        ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
         //forecastFragment.setUseTodayLayout(!mTwoPane);
 
 

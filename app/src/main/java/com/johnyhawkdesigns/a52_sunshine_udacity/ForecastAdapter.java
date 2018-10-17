@@ -75,14 +75,14 @@ public class ForecastAdapter extends CursorAdapter {
 
         int viewType = getItemViewType(cursor.getPosition());
         switch (viewType) {
+            // If it's first item (today) in the list, then use color art work icon
             case VIEW_TYPE_TODAY: {
-                // Get weather icon
                 viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
                         cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
                 break;
             }
+            // If it's other than 1st item in the list, then use black and white icon
             case VIEW_TYPE_FUTURE_DAY: {
-                // Get weather icon
                 viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
                         cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
                 break;

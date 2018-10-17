@@ -68,13 +68,18 @@ public class Utility {
         if (julianDay == currentJulianDay) {
             String today = context.getString(R.string.today);
             int formatId = R.string.format_full_friendly_date;
-            return String.format("%s - %s", today , getFormattedMonthDay(context, dateInMillis)) ; //" Need to fix this return statement inside Utility"
-            //TODO: Formatting should be done in this format mForecastStr = String.format("%s - %s - %s/%s", dateText, description, high, low);
+            String formattedMonthDay = getFormattedMonthDay(context, dateInMillis);
+            //return String.format("%s - %s", today , getFormattedMonthDay(context, dateInMillis)) ; //" Need to fix this return statement inside Utility"
+            //return String.format("%1$s -%2$s ", today , getFormattedMonthDay(context, dateInMillis)) ; //" Need to fix this return statement inside Utility"
+
+            //NOTE: Formatting should be done in this format mForecastStr = String.format("%s - %s - %s/%s", dateText, description, high, low);
             /*return String.format(context.getString(
                     formatId,
                     today,
                     getFormattedMonthDay(context, dateInMillis)
             ));*/
+            return String.format(context.getString(formatId), today, getFormattedMonthDay(context, dateInMillis));
+
         } else if ( julianDay < currentJulianDay + 7 ) { // Upto curent day + 7 means 1 week forecast will be shown as name of days
             // If the input date is less than a week in the future, just return the day name.
             return getDayName(context, dateInMillis);

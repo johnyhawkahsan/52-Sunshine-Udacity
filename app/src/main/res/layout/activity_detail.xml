@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailActivity"
-    tools:ignore="MergeRootFrame"
-    android:id="@+id/container_activity_detail">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
-    Strange thing is, if below lines are added or removed, they have no effect.
-    Maybe, this is because we are creating DetailFragment within DetailActivity.
-    <include layout="@layout/fragment_detail" />
-    -->
+    <android.support.design.widget.AppBarLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="?attr/colorPrimary" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:layout_marginTop="50dp"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".DetailActivity"
+        tools:ignore="MergeRootFrame"
+        android:id="@+id/weather_detail_container"> <!--weather_detail_container is the same as activity_main (sw600dp)-->
+
+        <!--
+        Strange thing is, if below lines are added or removed, they have no effect.
+        Maybe, this is because we are creating DetailFragment within DetailActivity.
+        <include layout="@layout/fragment_detail" />
+        -->
+
+    </FrameLayout>
 
 
 </FrameLayout>

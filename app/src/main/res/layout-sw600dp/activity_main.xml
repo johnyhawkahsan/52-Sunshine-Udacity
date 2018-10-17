@@ -11,6 +11,7 @@
     This layout is a two-pane layout for the Items master/detail flow.
     -->
 
+    <!--fragment_forecast is the same as activity_main.xml-->
     <fragment
         android:id="@+id/fragment_forecast"
         android:name="com.johnyhawkdesigns.a52_sunshine_udacity.ForecastFragment"
@@ -19,6 +20,7 @@
         android:layout_weight="2"
         tools:layout="@android:layout/list_content" />
 
+    <!--weather_detail_container is the same as activity_detail-->
     <FrameLayout
         android:id="@+id/weather_detail_container"
         android:layout_width="0dp"
