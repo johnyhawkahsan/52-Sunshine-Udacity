@@ -30,6 +30,8 @@ public class DetailActivity extends AppCompatActivity {
             Uri weatherLocationWithDateUri = getIntent().getData();
             Log.d(TAG, "onCreate, received from MainActivity, now send to DetailFragment. intent.getData() = " + weatherLocationWithDateUri);
 
+            Log.d(TAG, "onCreate: = received data from MainActivity =  " + getIntent().getData() );
+
             DetailFragment detailFragment = new DetailFragment();
             detailFragment.setArguments(arguments);
 

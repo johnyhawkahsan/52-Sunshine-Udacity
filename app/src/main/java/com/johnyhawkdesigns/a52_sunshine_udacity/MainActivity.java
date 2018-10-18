@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             // If this view is present, then the activity should be in two-pane mode.
             mTwoPane = true;
             // In two-pane mode, show the detail view in this activity by adding or replacing the detail fragment using a fragment transaction.
-            if (savedInstanceState == null) {
+            if (savedInstanceState == null) { // Dynamically adding Detail Fragment
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
                         .commit();
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         }
 
         ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
-        //forecastFragment.setUseTodayLayout(!mTwoPane);
+        forecastFragment.setUseTodayLayout(!mTwoPane);
 
 
 

@@ -39,6 +39,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
+    // These colums will be used as a selection in onCreateLoader
     private static final String[] DETAIL_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
             WeatherContract.WeatherEntry.COLUMN_DATE,
@@ -88,7 +89,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle arguments = getArguments();
         if (arguments != null) {
             weatherLocationWithDateUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
-            Log.d(TAG, "In onCreateLoader, received intent.getData() = " + weatherLocationWithDateUri);
+            Log.d(TAG, "In onCreateLoader, received intent.getData() from DetailActivity= " + weatherLocationWithDateUri);
         }
 
 
@@ -101,7 +102,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mHumidityView = (TextView) view.findViewById(R.id.detail_humidity_textview);
         mWindView = (TextView) view.findViewById(R.id.detail_wind_textview);
         mPressureView = (TextView) view.findViewById(R.id.detail_pressure_textview);
-
 
         return view;
     }

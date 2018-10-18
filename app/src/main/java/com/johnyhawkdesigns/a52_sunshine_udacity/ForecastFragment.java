@@ -168,6 +168,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
+        // NOTE: In tablet, when we rotated the device, it lost the selected item position in the list. This is to restore it.
         // If there's instance state, mine it for useful information. The end-goal here is that the user never knows that turning their device sideways
         // does crazy lifecycle related things.  It should feel like some stuff stretched out, or magically appeared to take advantage of room,
         // but data or place in the app was never actually *lost*.
@@ -186,7 +187,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onActivityCreated(savedInstanceState);
         //Loaders are created in onActivityCreated and it's bound to Activity not a fragment
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-
     }
 
     // since we read the location when we create the loader, all we need to do is restart things
