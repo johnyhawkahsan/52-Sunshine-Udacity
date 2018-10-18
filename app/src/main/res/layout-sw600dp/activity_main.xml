@@ -7,12 +7,28 @@
     android:orientation="horizontal"
     tools:context="com.johnyhawkdesigns.a52_sunshine_udacity.MainActivity">
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="?attr/colorPrimary"/>
+
+    </android.support.design.widget.AppBarLayout>
+
     <!--
     This layout is a two-pane layout for the Items master/detail flow.
     -->
 
     <!--fragment_forecast is the same as activity_main.xml-->
     <fragment
+        android:layout_marginTop="50dp"
         android:id="@+id/fragment_forecast"
         android:name="com.johnyhawkdesigns.a52_sunshine_udacity.ForecastFragment"
         android:layout_width="0dp"
@@ -22,6 +38,7 @@
 
     <!--weather_detail_container is the same as activity_detail-->
     <FrameLayout
+        android:layout_marginTop="50dp"
         android:id="@+id/weather_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"

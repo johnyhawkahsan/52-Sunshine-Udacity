@@ -8,6 +8,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:background="@drawable/touch_selector">
+    <!-- @drawable/touch_selector changes item color when it's clicked -->
 
     <FrameLayout
         android:layout_width="60dp"

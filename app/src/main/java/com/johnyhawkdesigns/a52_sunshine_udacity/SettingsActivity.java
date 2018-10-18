@@ -1,6 +1,9 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
 //=====================================Following tutorial from Androidhive======================================//
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -94,6 +97,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
             onBackPressed();//Finish the current activity
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // In tablet, when we go to setting and return back to detailActivity, new detailActivity was created and our selection was lost. To retain our previous selection, we use this method.
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public Intent getParentActivityIntent() {
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
 
