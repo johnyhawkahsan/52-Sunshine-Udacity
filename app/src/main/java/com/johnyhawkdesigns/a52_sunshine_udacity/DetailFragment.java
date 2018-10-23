@@ -38,8 +38,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private Uri weatherLocationWithDateUri;
 
     private static final int DETAIL_LOADER = 0;
+    public static final String DATE_KEY = "date";
+    public static final String LOCATION_KEY = "location";
+    private String mLocation;
 
-    // These colums will be used as a selection in onCreateLoader
+    // These columns will be used as a selection in onCreateLoader
     private static final String[] DETAIL_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
             WeatherContract.WeatherEntry.COLUMN_DATE,
@@ -139,12 +142,26 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+
+        // We need to handle the case of tablet where when detail fragment is created without any intent data
+        if (savedInstanceState != null){
+            mLocation = savedInstanceState.getString(LOCATION_KEY);
+        }
+        Intent intent = getActivity().getIntent();
+        // PHONE Case testing = If intent is not null means we receive some data when DetailFragment is create on a PHONE
+        if (intent != null){
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(LOCATION_KEY, mLocation);
+        super.onSaveInstanceState(outState);
+    }
 
-    void onLocationChanged( String newLocation ) {
+    void onLocationChanged(String newLocation ) {
         // replace the uri, since the location has changed
         Uri uri = weatherLocationWithDateUri;
         if (null != uri) {

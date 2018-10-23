@@ -61,14 +61,13 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         // If this is a phone
         else {
             Log.d(TAG, "onCreate: This is a phone and device resolution is less than 600dp");
+            //getSupportActionBar().setElevation(0f); // This does not work in our Toolbar
             mTwoPane = false;
-            //getSupportActionBar().setElevation(0f);
+
         }
 
         ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
-
-
 
     }
 

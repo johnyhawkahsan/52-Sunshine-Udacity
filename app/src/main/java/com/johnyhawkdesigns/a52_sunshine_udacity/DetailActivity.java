@@ -23,15 +23,12 @@ public class DetailActivity extends AppCompatActivity {
 
         //Add fragment to our Activity - Create the detail fragment and add it to the activity using a fragment transaction.
         if (savedInstanceState == null){
-            Log.d(TAG, "onCreate: adding Fragment DetailFragment");
 
             Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
             Uri weatherLocationWithDateUri = getIntent().getData();
             Log.d(TAG, "onCreate, received from MainActivity, now send to DetailFragment. intent.getData() = " + weatherLocationWithDateUri);
 
-            Log.d(TAG, "onCreate: = received data from MainActivity =  " + getIntent().getData() );
-
+            arguments.putParcelable(DetailFragment.DETAIL_URI, weatherLocationWithDateUri);
             DetailFragment detailFragment = new DetailFragment();
             detailFragment.setArguments(arguments);
 
