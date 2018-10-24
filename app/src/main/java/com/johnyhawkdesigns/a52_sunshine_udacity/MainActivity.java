@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.support.v7.app.ActionBar;
 
 //https://home.openweathermap.org/api_keys API
 //2a3d28af75a740af1e2614c2a02d26b2
@@ -30,7 +31,10 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Sunshine App");
+        getSupportActionBar().setIcon(R.drawable.ic_logo);
+        getSupportActionBar().setDisplayShowTitleEnabled(false); // To remove title because we are using logo
+
+
         //NOTE: Ahsan: if it is an ordinary phone, we have activity_main with fragment_forecast . If it is a tablet, we have activity_main(sw600dp) with fragment_forecast + FrameLayout (weather_detail_container) to dynamically add second detail fragment
 
         mLocation = Utility.getPreferredLocation(this);

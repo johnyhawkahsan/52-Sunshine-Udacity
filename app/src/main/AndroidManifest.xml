@@ -43,6 +43,7 @@
             android:authorities="com.johnyhawkdesigns.a52_sunshine_udacity"
             android:name=".data.WeatherProvider" />
 
+        <service android:name=".service.SunshineService"/>
     </application>
 
 </manifest>

@@ -21,6 +21,8 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.drawable.ic_logo);
+        getSupportActionBar().setDisplayShowTitleEnabled(false); // To remove title because we are using logo
 
         //Add fragment to our Activity - Create the detail fragment and add it to the activity using a fragment transaction.
         if (savedInstanceState == null){

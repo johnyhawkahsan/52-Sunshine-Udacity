@@ -14,7 +14,7 @@
             popupTheme="@style/AppTheme.PopupOverlay"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="?attr/colorPrimary"/>
+            android:background="@drawable/today_touch_selector" />
 
     </android.support.design.widget.AppBarLayout>
 

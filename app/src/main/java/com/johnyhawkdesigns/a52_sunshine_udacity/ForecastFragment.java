@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
+import com.johnyhawkdesigns.a52_sunshine_udacity.service.SunshineService;
 
 
 import java.util.ArrayList;
@@ -195,10 +196,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     //We took the code from Refresh button and created a method so we can use it in onStart method as well
     public void updateWeather(){
-        //Create AsyncTask for fetching weather info
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
-        String location = Utility.getPreferredLocation(getActivity()); //Retrieve saved location from SharedPreferences
-        fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
+          // Create AsyncTask for fetching weather info
+//        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
+//        String location = Utility.getPreferredLocation(getActivity()); //Retrieve saved location from SharedPreferences
+//        fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
+
+        //Create SunshineService instead of AsyncTask FetchWeatherTask
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
     }
 
     // When tablets rotate, the currently selected list item needs to be saved. When no item is selected, mPosition will be set to Listview.INVALID_POSITION, so check for that before storing.
