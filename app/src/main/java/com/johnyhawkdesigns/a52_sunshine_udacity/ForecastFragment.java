@@ -1,5 +1,8 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -196,15 +199,19 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     //We took the code from Refresh button and created a method so we can use it in onStart method as well
     public void updateWeather(){
-          // Create AsyncTask for fetching weather info
-//        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
-//        String location = Utility.getPreferredLocation(getActivity()); //Retrieve saved location from SharedPreferences
-//        fetchWeatherTask.execute(location); // Note: We can use City name and Postal code here. Peshawar Zip code = 25000 not working, 94043 = MountainView postal code works. why?? Maybe zip code is different than postal code
+        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
 
-        //Create SunshineService instead of AsyncTask FetchWeatherTask
-        Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
-        getActivity().startService(intent);
+        //Wrap in a pending intent which only fires once.
+        PendingIntent pi = PendingIntent.getBroadcast(getActivity(), 0,alarmIntent,PendingIntent.FLAG_ONE_SHOT);//getBroadcast(context, 0, i, 0); FLAG_ONE_SHOT means we only need this intent once
+        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        //Set the AlarmManager to wake up the system.
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi); // launch pending intent after 5 seconds
+
+          // Create SunshineService instead of AsyncTask FetchWeatherTask
+//        Intent intent = new Intent(getActivity(), SunshineService.class);
+//        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+//        getActivity().startService(intent);
     }
 
     // When tablets rotate, the currently selected list item needs to be saved. When no item is selected, mPosition will be set to Listview.INVALID_POSITION, so check for that before storing.

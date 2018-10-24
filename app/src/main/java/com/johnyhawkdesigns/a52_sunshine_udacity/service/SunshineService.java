@@ -1,8 +1,10 @@
 package com.johnyhawkdesigns.a52_sunshine_udacity.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -285,7 +287,7 @@ public class SunshineService extends IntentService {
                 inserted = this.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
 
-            Log.d(TAG, "Sunshine Service Complete. " + cVVector.size() + " Inserted");
+            Log.d(TAG, "Sunshine Service Complete. cVVector.size() = " + cVVector.size() + ", Inserted = " + inserted);
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -342,4 +344,14 @@ public class SunshineService extends IntentService {
         return locationId;
     }
 
+    public static class AlarmReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: ");
+            Intent sendIntent = new Intent(context, SunshineService.class);
+            sendIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, intent.getStringExtra(SunshineService.LOCATION_QUERY_EXTRA));
+            context.startService(sendIntent);
+        }
+    }
 }
