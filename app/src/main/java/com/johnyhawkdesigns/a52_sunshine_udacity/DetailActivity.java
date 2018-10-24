@@ -12,6 +12,7 @@ import android.view.MenuItem;
 public class DetailActivity extends AppCompatActivity {
 
     private static final String TAG = DetailActivity.class.getCanonicalName();
+    public static final String DATE_KEY = "date";
 
 
     @Override
@@ -27,10 +28,13 @@ public class DetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             Uri weatherLocationWithDateUri = getIntent().getData();
             Log.d(TAG, "onCreate, received from MainActivity, now send to DetailFragment. intent.getData() = " + weatherLocationWithDateUri);
-
-            arguments.putParcelable(DetailFragment.DETAIL_URI, weatherLocationWithDateUri);
             DetailFragment detailFragment = new DetailFragment();
-            detailFragment.setArguments(arguments);
+
+            if (weatherLocationWithDateUri != null){
+                Log.d(TAG, "onCreate: weatherLocationWithDateUri != null");
+                arguments.putParcelable(DetailFragment.DETAIL_URI, weatherLocationWithDateUri);
+                detailFragment.setArguments(arguments);
+            }
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.weather_detail_container, detailFragment) //container_activity_detail is the id of activity_detail.xml's main FrameLayout.
