@@ -24,3 +24,5 @@ public class SunshineSyncService extends Service {
         return sSunshineSyncAdapter.getSyncAdapterBinder();
     }
 }
+
+

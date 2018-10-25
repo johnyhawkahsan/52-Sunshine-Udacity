@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.johnyhawkdesigns.a52_sunshine_udacity.data.WeatherContract;
 import com.johnyhawkdesigns.a52_sunshine_udacity.service.SunshineService;
+import com.johnyhawkdesigns.a52_sunshine_udacity.sync.SunshineSyncAdapter;
 
 
 import java.util.ArrayList;
@@ -199,7 +200,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     //We took the code from Refresh button and created a method so we can use it in onStart method as well
     public void updateWeather(){
-        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+
+        SunshineSyncAdapter.syncImmediately(getActivity());
+
+/*
+       Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
         alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
 
         //Wrap in a pending intent which only fires once.
@@ -207,11 +212,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         //Set the AlarmManager to wake up the system.
         am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi); // launch pending intent after 5 seconds
+*/
 
-          // Create SunshineService instead of AsyncTask FetchWeatherTask
-//        Intent intent = new Intent(getActivity(), SunshineService.class);
-//        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
-//        getActivity().startService(intent);
+/*          // Create SunshineService instead of AsyncTask FetchWeatherTask
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
+*/
     }
 
     // When tablets rotate, the currently selected list item needs to be saved. When no item is selected, mPosition will be set to Listview.INVALID_POSITION, so check for that before storing.
