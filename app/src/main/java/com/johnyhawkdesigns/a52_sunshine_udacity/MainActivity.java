@@ -100,37 +100,10 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             return true;
         }
 
-        if (id == R.id.action_map){
-            openPreferredLocationInMap();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
-    //=========Method to open our preferred location in Google Maps
-    private void openPreferredLocationInMap() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = sharedPreferences.getString(
-                getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default)
-        );
 
-        // Using the URI scheme for showing a location found on a map.  This super-handy intent can is detailed in the "Common Intents" page of Android's developer site:
-        // http://developer.android.com/guide/components/intents-common.html#Maps
-        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-        
-        if (intent.resolveActivity(getPackageManager()) != null){
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + location + ", no receiving apps installed!");
-        }
-    }
 
 
     @Override
