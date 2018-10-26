@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.app.ActionBar;
 
+import com.johnyhawkdesigns.a52_sunshine_udacity.sync.SunshineSyncAdapter;
+
 //https://home.openweathermap.org/api_keys API
 //2a3d28af75a740af1e2614c2a02d26b2
 
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         ForecastFragment forecastFragment =  ((ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
         forecastFragment.setUseTodayLayout(!mTwoPane);
 
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
